@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PC Landscape Layout</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+
+        /* Header styles */
+        header {
+            background-color: #030186;
+            color: white;
+            text-align: left; /* Align text to the left */
+            padding: 10px;
+            font-size: 24px;
+            margin-bottom: 10px; /* Gap below the header */
+            font-weight: bold; /* Make text bold */
+            position: relative; /* Position relative for absolute positioning of the icon */
+        }
+
+        /* Profile icon styles */
+        .profile-icon {
+            background-color: white; /* White background for the icon */
+            border-radius: 50%; /* Make it circular */
+            width: 30px; /* Decreased width of the icon */
+            height: 30px; /* Decreased height of the icon */
+            position: absolute; /* Position it absolutely within the header */
+            right: 10px; /* Align to the right */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Adjust for vertical centering */
+            display: flex; /* Flexbox for centering the icon content */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            font-size: 16px; /* Decreased font size for the icon */
+            color: #030186; /* Color of the icon */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+
+        /* Main container styles */
+       .container {
+    display: flex;
+    height: calc(100vh - 60px); /* Adjust height based on header */
+    margin-top: 10px; /* Add gap between header and container */
+}
+
+        /* Left body styles */
+        .left-body {
+    background-image: url('animation/background.png'); /* Replace with your image path */
+    background-size: cover; /* Cover the entire area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Prevent the image from repeating */
+    width: 85%; /* Wider width */
+    padding: 20px;
+    margin-right: 10px; /* Gap between left and right body */
+    margin-left: 10px; /* Gap on the left side */
+    margin-bottom: 10px; /* Gap on the bottom */
+    height: 94%;
+    position: relative; /* Position relative for overlay */
+    border: 2px solid #030186;
+    border-radius: 20px;
+}
+
+        /* Right body styles */
+        .right-body {
+            background-color: lightgray; /* Light gray background */
+            width: 15%; /* Shorter width */
+            padding: 20px;
+            margin-right: 10px; /* Gap on the right side */
+            margin-bottom: 10px; /* Gap on the bottom */
+            display: flex;
+            flex-direction: column; /* Stack rows vertically */
+            height: 94%; /* Set a fixed height for the right body */
+        }
+
+        /* Log Out button styles */
+        .logout-button {
+    background-color: red; /* Red background for the logout button */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Consistent padding */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Consistent font size */
+    font-weight: bold; /* Extra bold text */
+    text-align: center; /* Center text inside the button */
+    margin-bottom: 10px; /* Gap between buttons */
+    width: 100%; /* Full width */
+    height: 50px; /* Fixed height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Initial shadow for 3D effect */
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effects */
+}
+
+/* Hover effect */
+.logout-button:hover {
+    transform: translateY(-2px); /* Lift the button slightly */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+}
+
+        /* Overlay styles */
+        .overlay {
+            position: absolute; /* Position it within the left body */
+            top: 0;
+            left: 0;
+            width: calc(100% - 40px); /* Match width of left body minus padding */
+            height: calc(100% - 40px); /* Match height of left body minus padding */
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none; /* Hidden by default */
+            flex-direction: column; /* Stack header, body, and footer vertically */
+            border-radius: 8px; /* Optional: rounded corners */
+            padding: 20px; /* Padding for the overlay */
+            opacity: 0; /* Start with opacity 0 for fade effect */
+            transition: opacity 0.3s ease; /* Transition for smooth fade */
+        }
+
+        .overlay.show {
+            display: flex; /* Show overlay */
+            opacity: 1; /* Fade in */
+        }
+
+        .overlay-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px 8px 0 0; /* Rounded top corners */
+            font-size: 20px; /* Increased font size */
+            font-weight: bold; /* Make text bold */
+        }
+
+        .overlay-body {
+            background-color: white;
+            flex: 1; /* Take remaining space */
+            padding: 20px;
+            text-align: left;
+            overflow-y: auto; /* Allow scrolling if content overflows */
+        }
+
+        .overlay-footer {
+            background-color: white;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color:  #030186;
+        }
+
+        table {
+            width: 100%; /* Full width */
+            border-collapse: collapse; /* Collapse borders */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Light gray border */
+            padding: 8px; /* Padding inside cells */
+            text-align: left; /* Align text to the left */
+        }
+
+        th {
+            background-color:  #030186; /* Header background color */
+            color: white; /* Header text color */
+        }
+
+        .view-button {
+            background-color: green; /* Green background for the view button */
+            color: white; /* White text color */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            padding: 5px 10px; /* Padding inside the button */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 14px; /* Font size for the button */
+            font-weight: bold; /* Bold text */
+        }
+
+        .student-detail-container,
+        .landlord-detail-container,
+        .temp-app-student-detail-container,
+        .temp-app-landlord-detail-container,
+        .reject-student-detail-container,
+        .reject-landlord-detail-container{
+            width: 50%;
+            display: none; /* Hidden by default */
+            height: 40%;
+            position: fixed; /* Fixed position for overlay effect */
+            top: 50%; /* Center vertically */
+            left: 41%; /* Center horizontally */
+            transform: translate(-50%, -50%); /* Adjust for centering */
+            background-color: white; /* White background */
+            border: 1px solid #ddd; /* Light gray border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 20px; /* Padding inside the container */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            z-index: 1000; /* Ensure it appears above other elements */
+        }
+
+        .close-detail-button {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color:  #030186;
+            float: right; /* Align to the right */
+        }
+        
+        .profile-pic-container {
+            display: flex;
+            flex-direction: column; /* Stack profile picture and ID vertically */
+            justify-content: center;
+            align-items: center;
+            margin-left: 15%;
+            margin-right: 50px;
+            padding: 50px;
+        }
+
+        .profile-pic {
+            width: 150px; /* Width of the profile picture */
+            height: 150px; /* Height of the profile picture */
+            background-color: gray; /* Gray background for the profile picture */
+            display: flex; /* Flexbox for centering the image */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            overflow: hidden; /* Hide overflow */
+        }
+
+        .student-info-container,
+        .landlord-info-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: flex-start; /* Align items to the start */
+        }
+
+        /* Button container styles */
+        .button-container {
+            display: flex;
+            justify-content: space-between; /* Space between buttons */
+            margin-top: 20px; /* Space above the button container */
+        }
+
+        .button-container button {
+            flex: 1; /* Equal width for buttons */
+            margin: 0 5px; /* Margin between buttons */
+            padding: 10px; /* Padding inside buttons */
+            font-size: 16px; /* Font size for buttons */
+            font-weight: bold; /* Bold text */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+        
+        .logout-button {
+          background-color: red; /* Red background for the logout button */
+          color: white; /* White text color */
+          border: none; /* No border */
+          border-radius: 5px; /* Rounded corners */
+          padding: 10px; /* Consistent padding */
+          cursor: pointer; /* Pointer cursor on hover */
+          font-size: 16px; /* Consistent font size */
+          font-weight: bold; /* Extra bold text */
+          text-align: center; /* Center text inside the button */
+          margin-bottom: 10px; /* Gap between buttons */
+          width: 100%; /* Full width */
+          height: 50px; /* Fixed height */
+        }
+        
+        .action-button {
+    background-color: #030186; /* Royal blue background for the buttons */
+    color: white; /* White text color */
+    border: none; /* No border */
+    border-radius: 15px; /* Rounded corners */
+    padding: 10px; /* Consistent padding */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Consistent font size */
+    font-weight: bold; /* Extra bold text */
+    text-align: center; /* Center text inside the button */
+    margin-bottom: 15px; /* Gap between buttons */
+    width: 100%; /* Full width */
+    height: 50px; /* Fixed height */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Initial shadow for 3D effect */
+    transition: transform 0.2s, box-shadow 0.2s; /* Smooth transition for hover effects */
+}
+
+/* Hover effect */
+.action-button:hover {
+    transform: translateY(-2px); /* Lift the button slightly */
+    transition: 2s;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Increase shadow on hover */
+    background-color: royalblue;
+}
+
+        .approve-button {
+            background-color:  #030186; /* Blue background for approve button */
+            color: white; /* White text color */
+        }
+
+        .reject-button {
+            background-color: red; /* Red background for reject button */
+            color: white; /* White text color */
+        }
+
+        .ce-form-button {
+            background-color: orange; /* Orange background for CE Form button */
+            color: black; /* Black text color */
+        }
+
+        .bhouse-photo-button {
+            background-color: green; /* Green background for Bhouse Photo button */
+            color: white; /* White text color */
+        }
+        
+        .temporary-approve-landlord-button {
+          background-color: #97d1fd;
+          color: black;
+        }
+        
+        .temporary-approve-student-button {
+          background-color: #97d1fd;
+          color: black;
+        }
+        
+        .reason-button {
+          background-color: red;
+          color: white;
+        }
+        
+        .proof-of-enrollment-button {
+          background-color: #90532b;
+          color: white;
+        }
+
+        /* Loading animation styles */
+        .loading-container {
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full viewport height */
+        }
+
+        .dot {
+            width: 20px; /* Size of the dots */
+            height: 20px; /* Size of the dots */
+            border-radius: 50%; /* Make them circular */
+            margin: 0 5px; /* Space between dots */
+            animation: bounce 1s infinite; /* Animation effect */
+        }
+
+        .red {
+            background-color: red;
+            animation-delay: 0s; /* No delay for the first dot */
+        }
+
+        .orange {
+            background-color: orange;
+            animation-delay: 0.2s; /* Delay for the second dot */
+        }
+
+        .blue {
+            background-color: #030186;
+            animation-delay: 0.4s; /* Delay for the third dot */
+        }
+
+        .green {
+            background-color: green;
+            animation-delay: 0.6s; /* Delay for the fourth dot */
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0); /* Start and end at original position */
+            }
+            50% {
+                transform: translateY(-20px); /* Move up */
+            }
+        }
+        
+        #proof-of-enrollment-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f9f9f9; /* Light background for contrast */
+    border: 1px solid #ddd; /* Light border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+#proof-of-enrollment-image {
+    display: none; /* Initially hidden */
+    width: 100%; /* Full width */
+    height: auto; /* Maintain aspect ratio */
+    border: 2px solid #007bff; /* Blue border */
+    border-radius: 5px; /* Slightly rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    #proof-of-enrollment-container {
+        padding: 10px; /* Less padding on smaller screens */
+    }
+
+
+    #proof-of-enrollment-image {
+        border: 1px solid #007bff; /* Adjust border for smaller screens */
+    }
+}
+
+header {
+    background-color: #030186;
+    color: white;
+    margin : 0;
+}
+
+.header-content {
+    display: flex; /* Enables flexbox layout */
+    align-items: center; /* Vertically centers items */
+}
+
+.logo {
+    width: 50px; /* Set a fixed width for the logo */
+    height: auto; /* Maintains aspect ratio */
+    margin-right: 10px; /* Space between logo and title */
+}
+
+.header-title {
+    flex-grow: 0; /* Allows the title to take up remaining space */
+    font-size: 1em; /* Adjusts font size for the title */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 600px) {
+    .logo {
+        width: 40px; /* Adjusts logo size for smaller screens */
+    }
+    .header-title {
+        font-size: 1.2em; /* Adjusts font size for smaller screens */
+    }
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    animation: fadeIn 0.3s; /* Fade-in animation */
+}
+
+.modal-content {
+    background-color: #ECF0F6; /* Lightest shade */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding inside the modal */
+    text-align: center; /* Center text */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    animation: slideIn 0.3s; /* Slide-in animation */
+}
+
+.modal-buttons {
+    display: flex; /* Use flexbox for button layout */
+    justify-content: space-around; /* Space between buttons */
+    margin-top: 20px; /* Space above buttons */
+}
+
+.modal-button {
+    background-color: #030186; /* Muted medium blue */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding for buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.modal-button:hover {
+    background-color: #47647F; /* Deep blue-gray on hover */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-content">
+        <img src="animation/adlogo.png" alt="Office of Student Affairs and Services Logo" class="logo">
+        <span class="header-title">Office of Student Affairs and Services (OSAS)</span>
+        <div class="profile-icon" id="profile-icon">👤</div> <!-- Profile icon -->
+    </div>
+</header>
+
+<div class="container">
+    <div class="left-body">
+        <!-- Left Body (Wider) -->
+        <div class="overlay" id="overlay">
+            <div class="overlay-header">
+                <span class="button-name" id="button-name">Button Name</span>
+                <button class="close-button" onclick="closeOverlay()">❌</button> <!-- Close button as an icon -->
+            </div>
+            <div class="overlay-body" id="overlay-body">
+                <!-- Content will be dynamically added here -->
+            </div>
+            <div class="overlay-footer">
+                <!-- Footer content removed -->
+            </div>
+        </div>
+
+        <div class="student-detail-container" id="student-detail-container" style="display: none;">
+    <button class="close-detail-button" onclick="closeDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1;">
+            <div class="profile-pic">
+                <img id="student-profile-pic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p id="student-id" style="margin-top: 10px; text-align: center;"></p> <!-- Student ID below the profile picture -->
+        </div>
+        <div class="student-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="student-detail-title">Student Details</h2>
+            <div id="student-detail-content"></div>
+        </div>
+    </div>
+    <!-- Button container for CE Form inside the student detail container -->
+    <div class="button-container" id="student-buttons" style="display: flex;"> <!-- Initially visible -->
+        <button class="approve-button" onclick="approveStudent()">Approve</button>
+        <button class="temporary-approve-student-button" onclick="temporaryapproveStudent()">Temporary Approve</button>
+        <button class="reject-button" onclick="rejectStudent()">Reject</button>
+        <button class="ce-form-button" onclick="openCEForm()" disabled>CE Form</button>
+        <button class="proof-of-enrollment-button" onclick="openEnrollent()">Proof Of Enrollment</button>
+    </div>
+</div>
+
+        <!-- Modal for displaying the enlarged proof of enrollment image -->
+        <div id="proof-of-enrollment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeProofOfEnrollmentModal()" style="color: white; font-size: 30px; position: absolute; top: 20px; right: 30px; cursor: pointer;">&times;</span>
+    <img id="enlarged-proof-image" src="" alt="Proof of Enrollment" style="max-width: 90%; max-height: 90%; margin: auto; display: block;" />
+</div>
+
+        <!-- Modal for displaying the PDF -->
+        <div id="ce-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000;">
+          
+          <span onclick="closeCEForm()" style="color: white; font-size: 30px; position: absolute; top: 20px; right: 30px; cursor: pointer;">&times;</span>
+          <iframe id="pdf-frame" style="width: 80%; height: 80%; border: none;"></iframe>
+</div>
+
+          <!-- Modal for displaying the enlarged proof of enrollment image -->
+          <div id="image-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeImageModal()" style="color: white; font-size: 30px; position: absolute; top: 20px; right: 30px; cursor: pointer;">&times;</span>
+    <img id="enlarged-proof-image" src="" alt="Proof of Enrollment" style="max-width: 90%; max-height: 90%; margin: auto; display: block;" />
+</div>
+
+        <div class="landlord-detail-container" id="landlord-detail-container" style="display: none;">
+    <button class="close-detail-button" onclick="closeLandlordDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1;">
+            <div class="profile-pic">
+                <img id="landlord-identification-pic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
+        <div class="landlord-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="landlord-detail-title">Landlord Details</h2>
+            <div id="landlord-detail-content">
+                <p><strong>Name:</strong> <span id="landlord-name"></span></p> <!-- Placeholder for landlord name -->
+                <p><strong>ID:</strong> <span id="landlord-id-display"></span></p> <!-- Placeholder for landlord ID -->
+            </div>
+        </div>
+    </div>
+    <!-- Button container for Approve, Reject, Barangay Certificate, and Bhouse Photo -->
+    <div class="button-container" id="landlord-buttons">
+        <button class="approve-button" onclick="approveLandlord()">Approve</button>
+        <button class="temporary-approve-landlord-button" onclick="temporaryapproveLandlord()">Temporary Approve</button>
+        <button class="reject-button" onclick="rejectLandlord()">Reject</button>
+        <button class="ce-form-button" onclick="openBarangayCertificate()">Barangay Certificate</button>
+        <button class="bhouse-photo-button" onclick="openBhousePhoto()">Bhouse Photo</button>
+    </div>
+</div>
+
+        <!-- Modal for displaying the enlarged Barangay's Permit image -->
+        <div id="barangay-permit-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeBarangayPermitModal()" style="color: white; font-size: 30px; position: absolute; top: 20px; right: 30px; cursor: pointer;">&times;</span>
+    <img id="enlarged-barangay-permit-image" src="" alt="Barangay's Permit" style="max-width: 90%; max-height: 90%; margin: auto; display: block;" />
+</div>
+
+        <!-- Modal for displaying the enlarged Boarding House Photo -->
+        <div id="bhouse-photo-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000;">
+    <span onclick="closeBhousePhotoModal()" style="color: white; font-size: 30px; position: absolute; top: 20px; right: 30px; cursor: pointer;">&times;</span>
+    <img id="enlarged-bhouse-photo-image" src="" alt="Boarding House Photo" style="max-width: 90%; max-height: 90%; margin: auto; display: block;" />
+</div>
+        
+        <div class="temp-app-student-detail-container" id="temp-app-student-detail-container" style="display: none;">
+    <button class="close-detail-button" onclick="closeTempAppStudentDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1;">
+            <div class="profile-pic">
+                <img id="identification-pic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p id="student-id" style="margin-top: 10px; text-align: center; font-weight: bold;"></p> <!-- Student ID below the profile picture -->
+        </div>
+        <div class="student-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="student-detail-title">Student Details</h2>
+            <div id="temp-app-student-detail-content"></div> <!-- Content for temporary approved student details -->
+        </div>
+    </div>
+
+    <!-- Button container for temporary approved student actions -->
+    <div class="button-container" id="student-buttons" style="display: flex; justify-content: space-between;">
+        <button class="approve-button" onclick="approveTemporaryStudent()">Approve</button>
+        <button class="reject-button" onclick="rejectTemporaryStudent()">Reject</button>
+    </div>
+</div>
+        
+        <div class="temp-app-landlord-detail-container" id="temp-app-landlord-detail-container">
+    <button class="close-detail-button" onclick="closeTempAppLandlordDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1;">
+            <div class="profile-pic">
+                <img id="landlord-profile-pic" src="path/to/default/profile-pic.jpg" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <p id="landlord-id" style="margin-top: 10px; text-align: center;"></p> <!-- Landlord ID below the profile picture -->
+        </div>
+        <div class="landlord-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="landlord-detail-title">Landlord Details</h2>
+            <div id="temp-app-landlord-detail-content"></div>
+        </div>
+    </div>
+
+    <div class="button-container" id="student-buttons" style="display: flex; justify-content: space-between;">
+        <button class="approve-button" onclick="approveTemporaryLandlord()">Approve</button>
+        <button class="reject-button" onclick="rejectTemporaryLandlord()">Reject</button>
+    </div>
+</div>
+        
+        <div class="reject-student-detail-container" id="reject-student-detail-container" style="display: none;">
+    <button class="close-detail-button" onclick="rejectStudentCloseDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1; text-align: center;">
+            <div class="profile-pic">
+                <img id="student-identification-pic" src="animation/rejected.png" alt="Student Identification Pic" style="width: 100px; height: auto; margin-top: 10px;"/>
+            </div>
+            <p id="student-id" style="margin-top: 10px; text-align: center;"></p> <!-- Student ID below the profile picture -->
+        </div>
+        <div class="student-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="student-detail-title">Student Details</h2>
+            <div id="reject-student-detail-content"></div>
+        </div>
+    </div>
+    <!-- Button container for rejected student view -->
+    <div class="button-container" id="student-buttons" style="display: flex; justify-content: space-between;">
+    </div>
+</div>
+
+        <div class="reject-landlord-detail-container" id="reject-landlord-detail-container" style="display: none;">
+    <button class="close-detail-button" onclick="rejectLandlordCloseDetail()">❌</button>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <div class="profile-pic-container" style="flex: 1; text-align: center;">
+            <div class="profile-pic">
+                <img id="landlord-identification-pic" src="animation/rejected.png" alt="Landlord Identification Pic" style="width: 100px; height: auto; margin-top: 10px;"/>
+            </div>
+            <p id="landlord-id" style="margin-top: 10px; text-align: center;"></p> <!-- Landlord ID below the profile picture -->
+        </div>
+        <div class="landlord-info-container" style="flex: 2; padding: 20px;">
+            <h2 id="landlord-detail-title">Landlord Details</h2>
+            <div id="reject-landlord-detail-content"></div>
+        </div>
+    </div>
+    <!-- Button container for rejected landlord view -->
+    <div class="button-container" id="landlord-buttons" style="display: flex; justify-content: space-between;">
+    </div>
+</div>
+
+        <!-- Loading Animation -->
+        <div class="loading-container" id="loading-container">
+            <div class="dot red"></div>
+            <div class="dot orange"></div>
+            <div class="dot blue"></div>
+            <div class="dot green"></div>
+        </div>
+    </div>
+    <div class="right-body">
+      <div class="student-action">
+        <h2>Student</h2>
+        <button class="action-button" id="approved-student-list-button" onclick="showOverlay('Approved Students')">Approved List</button>
+        <button class="action-button" id="temporary-approved-student-list-button" onclick="showOverlay('Temporary Approved Student')">Temporary Approved</button>
+        <button class="action-button" id="pending-student-button" onclick="showOverlay('Pending Student')">Pending Student</button>
+        <button class="action-button" id="reject-student-list-button" onclick="showOverlay('Rejected Students')">Rejected List</button>
+      </div>
+      <div class="lanlord-action">
+        <h2>Landlord</h2>
+        <button class="action-button" id="approved-landlord-list-button" onclick="showOverlay('Approved Landlords')">Approved List</button>
+        <button class="action-button" id="temporary-approved-landlord-list-button" onclick="showOverlay('Temporary Approved Landlord')">Temporary Approved</button>
+        <button class="action-button" id="pending-landlord-button" onclick="showOverlay('Pending Landlord')">Pending Landlord</button>
+        <button class="action-button" id="rejected-landlord-list-button" onclick="showOverlay('Rejected Landlords')">Rejected List</button>
+      </div>
+      <div class="log-out-container" style="margin-top: auto;">
+       <button class="logout-button" id="logout-button" onclick="logout()">Log Out</button> <!-- Log Out button --> 
+      </div>
+    </div>
+    
+    <div id="logoutModal" class="modal">
+    <div class="modal-content">
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to log out?</p>
+        <div class="modal-buttons">
+            <button class="modal-button" id="confirmLogout">Yes</button>
+            <button class="modal-button" id="cancelLogout">No</button>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+<script>
+    const profileIcon = document.getElementById('profile-icon');
+    const logoutButton = document.getElementById('logout-button');
+    const actionButtons = document.querySelectorAll('.action-button');
+    const studentDetailContainer = document.getElementById('student-detail-container');
+    const studentDetailContent = document.getElementById('student-detail-content');
+    const landlordDetailContainer = document.getElementById('landlord-detail-container');
+    const landlordDetailContent = document.getElementById('landlord-detail-content');
+    const tempappStudentContainer = document.getElementById('temp-app-student-detail-container');
+    const tempappStudentContent = document.getElementById('temp-app-student-detail-content');
+    const tempappLandlordContainer = document.getElementById('temp-app-landlord-detail-container');
+    const tempappLandlordContent = document.getElementById('temp-app-landlord-detail-content');
+    
+    const rejectStudentContainer = document.getElementById('reject-student-detail-container');
+    const rejectStudentContent = document.getElementById('reject-student-detail-content');
+    
+    const rejectLandlordContainer = document.getElementById('reject-landlord-detail-container');
+    const rejectLandlordContent = document.getElementById('reject-landlord-detail-content');
+    
+    const landlordButtons = document.getElementById('landlord-buttons');
+    const studentButtons = document.getElementById('student-buttons');
+    const loadingContainer = document.getElementById('loading-container');
+
+    // Toggle logout button visibility when profile icon is clicked
+    profileIcon.addEventListener('click', () => {
+        if (logoutButton.style.display === 'none' || logoutButton.style.display === '') {
+            logoutButton.style.display = 'block'; // Show the logout button
+        } else {
+            logoutButton.style.display = 'none'; // Hide the logout button
+        }
+    });
+
+    function showOverlay(buttonName) {
+        document.getElementById('button-name').innerText = buttonName;
+        const overlay = document.querySelector('.overlay');
+        const overlayBody = document.getElementById('overlay-body');
+
+        // Clear previous content
+        overlayBody.innerHTML = '';
+
+        // Hide any currently displayed detail containers
+        studentDetailContainer.style.display = 'none';
+        landlordDetailContainer.style.display = 'none';
+        tempappStudentContainer.style.display = 'none';
+        tempappLandlordContainer.style.display = 'none';
+        rejectStudentContainer.style.display = 'none';
+        rejectLandlordContainer.style.display = 'none';
+
+        // Show loading animation
+        loadingContainer.style.display = 'flex';
+
+        setTimeout(() => {
+            loadingContainer.style.display = 'none'; // Hide loading animation after a delay
+
+            if (buttonName === 'Approved Students') {
+    // Create a table for Approved Students
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Student ID', 'Name', 'Permanent Address', 'Course', 'College', 'Student Type', 'Gender', 'Action']; // Removed 'Identification Pic'
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch approved students from the server
+    fetch('fetch_approved_students.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(student => {
+                const row = document.createElement('tr');
+                const fullName = `${student.fname} ${student.mname ? student.mname + ' ' : ''}${student.lname} ${student.nextension ? student.nextension : ''}`;
+                row.innerHTML = `
+                    <td>${student.id}</td> <!-- This should be the primary key -->
+                    <td>${student.student_id}</td>
+                    <td>${fullName}</td>
+                    <td>${student.paddress}</td>
+                    <td>${student.course}</td>
+                    <td>${student.college}</td>
+                    <td>${student.type}</td>
+                    <td>${student.gender}</td>
+                    <td class="identification-pic-column" style="display: none;"> <!-- Hidden column for identification pic -->
+                        ${student.identification_pic} <!-- Keep the value in the DOM -->
+                    </td>
+                    <td>
+                        <button class="view-button" onclick="viewApprovedStudent('${student.student_id}', '${fullName}', '${student.paddress}', '${student.course}', '${student.gender}', '${student.id}', '${student.identification_pic}')">View</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching approved students:', error);
+            overlayBody.innerHTML = '<p>Error loading approved students.</p>';
+        });
+}
+            
+            else if (buttonName === 'Approved Landlords') {
+    // Create a table for Approved Landlords
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Name', 'Permanent Address', 'Gender', 'Action']; // Adjust headers as necessary
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch approved landlords from the server
+    fetch('fetch_approved_landlords.php') // Adjust the endpoint as necessary
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(landlord => {
+                const row = document.createElement('tr');
+                const fullName = `${landlord.first_name} ${landlord.middle_initial ? landlord.middle_initial + ' ' : ''}${landlord.last_name} ${landlord.name_extension ? landlord.name_extension : ''}`;
+                row.innerHTML = `
+                    <td>${landlord.id}</td>
+                    <td>${fullName}</td>
+                    <td>${landlord.permanent_address}</td>
+                    <td>${landlord.gender}</td>
+                    <td><button class="view-button" onclick="viewLandlord('${landlord.id}', '${fullName}', '${landlord.landlord_identification_pic}')">View</button></td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching approved landlords:', error);
+            overlayBody.innerHTML = '<p>Error loading approved landlords.</p>';
+        });
+}
+            
+            else if (buttonName === 'Pending Student') {
+    // Create a table for Pending Students
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Student ID', 'Name', 'Permanent Address', 'Course', 'College', 'Student Type', 'Gender', 'Action']; // Removed 'Identification Pic' from headers
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch pending students from the server
+    fetch('fetch_pending_students.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(student => {
+                const row = document.createElement('tr');
+                const fullName = `${student.fname} ${student.mname ? student.mname + ' ' : ''}${student.lname} ${student.nextension ? student.nextension : ''}`;
+
+                // Create the row with the proof of enrollment path included
+                row.innerHTML = `
+                    <td>${student.id}</td>
+                    <td>${student.student_id}</td>
+                    <td>${fullName}</td>
+                    <td>${student.paddress}</td>
+                    <td>${student.course}</td>
+                    <td>${student.college}</td>
+                    <td>${student.type}</td>
+                    <td>${student.gender}</td>
+                    <td class="identification-pic-column" style="display: none;"> <!-- Hide the column but keep the data -->
+                        ${student.identification_pic} <!-- Keep the value in the DOM -->
+                    </td>
+                    <td>
+                        <button class="view-button" onclick="viewPendingStudent('${student.student_id}', '${fullName}', '${student.course}', '${student.id}', '${student.proof_of_enrollment}', '${student.certificate_of_enrollment}', '${student.identification_pic}')">View</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching pending students:', error);
+            overlayBody.innerHTML = '<p>Error loading pending students.</p>';
+        });
+}
+            
+            else if (buttonName === 'Pending Landlord') {
+    // Create a table for Pending Landlords
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Name', 'Permanent Address', 'Gender', 'Action']; // Removed the columns
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch pending landlords from the server
+    fetch('fetch_pending_landlords.php') // Adjust the endpoint as necessary
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(landlord => {
+                const row = document.createElement('tr');
+                const fullName = `${landlord.first_name} ${landlord.middle_initial ? landlord.middle_initial + ' ' : ''}${landlord.last_name} ${landlord.name_extension ? landlord.name_extension : ''}`;
+                row.innerHTML = `
+                    <td>${landlord.id}</td>
+                    <td>${fullName}</td>
+                    <td>${landlord.permanent_address}</td>
+                    <td>${landlord.gender}</td>
+                    <td><button class="view-button" onclick="viewPendingLandlord('${landlord.id}', '${fullName}', '${landlord.barangay_permit}', '${landlord.boarding_house_photo}', '${landlord.landlord_identification_pic}')">View</button></td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching pending landlords:', error);
+            overlayBody.innerHTML = '<p>Error loading pending landlords.</p>';
+        });
+}
+            
+            else if (buttonName === 'Temporary Approved Student') {
+    // Create a table for Temporary Approved Students
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Student ID', 'Name', 'Permanent Address', 'Course', 'College', 'Student Type', 'Gender', 'Action']; // Removed 'Identification Pic'
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch temporary approved students from the server
+    fetch('fetch_temporary_approved_students.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(student => {
+                const row = document.createElement('tr');
+                const fullName = `${student.fname} ${student.mname ? student.mname + ' ' : ''}${student.lname} ${student.nextension ? student.nextension : ''}`;
+
+                // Create the row with the identification pic hidden
+                row.innerHTML = `
+                    <td>${student.id}</td> <!-- This should be the primary key -->
+                    <td>${student.student_id}</td>
+                    <td>${fullName}</td>
+                    <td>${student.paddress}</td>
+                    <td>${student.course}</td>
+                    <td>${student.college}</td>
+                    <td>${student.type}</td>
+                    <td>${student.gender}</td>
+                    <td class="identification-pic-column" style="display: none;"> <!-- Hide the column but keep the data -->
+                        ${student.identification_pic} <!-- Keep the value in the DOM -->
+                    </td>
+                    <td>
+                        <button class="view-button" onclick="viewTemporaryApprovedStudent('${student.student_id}', '${fullName}', '${student.paddress}', '${student.course}', '${student.gender}', '${student.id}', '${student.identification_pic}')">View</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching temporary approved students:', error);
+            overlayBody.innerHTML = '<p>Error loading temporary approved students.</p>';
+        });
+}
+            
+            else if (buttonName === 'Temporary Approved Landlord') {
+    // Create a table for Temporary Approved Landlords
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Name', 'Permanent Address', 'Gender', 'Action']; // Adjust headers as necessary
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch temporary approved landlords from the server
+    fetch('fetch_temporary_approved_landlords.php') // Adjust the endpoint as necessary
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(landlord => {
+                const row = document.createElement('tr');
+                const fullName = `${landlord.first_name} ${landlord.middle_initial ? landlord.middle_initial + ' ' : ''}${landlord.last_name} ${landlord.name_extension ? landlord.name_extension : ''}`;
+                row.innerHTML = `
+                    <td>${landlord.id}</td>
+                    <td>${fullName}</td>
+                    <td>${landlord.permanent_address}</td>
+                    <td>${landlord.gender}</td>
+                    <td><button class="view-button" onclick="viewTemporaryApprovedLandlord('${landlord.id}', '${fullName}', '${landlord.landlord_identification_pic}')">View</button></td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching temporary approved landlords:', error);
+            overlayBody.innerHTML = '<p>Error loading temporary approved landlords.</p>';
+        });
+}
+            
+            else if (buttonName === 'Rejected Students') {
+    // Create a table for Rejected Students
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Student ID', 'Name', 'Permanent Address', 'Identification Pic', 'Action']; // Added 'Identification Pic' header
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch rejected students from the server
+    fetch('fetch_rejected_students.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(student => {
+                const row = document.createElement('tr');
+                const fullName = `${student.fname} ${student.mname ? student.mname + ' ' : ''}${student.lname} ${student.nextension ? student.nextension : ''}`;
+                row.innerHTML = `
+                    <td>${student.id}</td> <!-- This should be the primary key -->
+                    <td>${student.student_id}</td>
+                    <td>${fullName}</td>
+                    <td>${student.paddress}</td>
+                    <td>
+                        <img src="${student.identification_pic}" alt="Identification Pic" style="width: 50px; height: auto; object-fit: cover;" /> <!-- Display the identification picture -->
+                    </td>
+                    <td>
+                    <button class="view-button" onclick="viewRejectedStudent('${student.student_id}', '${fullName}', '${student.id}', '${student.paddress}', '${student.identification_pic}')">View</button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching rejected students:', error);
+            overlayBody.innerHTML = '<p>Error loading rejected students.</p>';
+        });
+}
+
+            else if (buttonName === 'Rejected Landlords') {
+    // Create a table for Rejected Landlords
+    const table = document.createElement('table');
+    const headerRow = document.createElement('tr');
+    const headers = ['ID', 'Name', 'Permanent Address', 'Gender', 'Action']; // Adjust headers as necessary
+
+    headers.forEach(headerText => {
+        const th = document.createElement('th');
+        th.innerText = headerText;
+        headerRow.appendChild(th);
+    });
+
+    table.appendChild(headerRow);
+
+    // Fetch rejected landlords from the server
+    fetch('fetch_rejected_landlords.php') // Adjust the endpoint as necessary
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(landlord => {
+                const row = document.createElement('tr');
+                const fullName = `${landlord.first_name} ${landlord.middle_initial ? landlord.middle_initial + ' ' : ''}${landlord.last_name} ${landlord.name_extension ? landlord.name_extension : ''}`;
+                row.innerHTML = `
+                    <td>${landlord.id}</td>
+                    <td>${fullName}</td>
+                    <td>${landlord.permanent_address}</td>
+                    <td>${landlord.gender}</td>
+                    <td><button class="view-button" onclick="viewRejectedLandlord('${landlord.id}', '${fullName}', '${landlord.landlord_identification_pic}')">View</button></td>
+                `;
+                table.appendChild(row);
+            });
+            overlayBody.appendChild(table);
+        })
+        .catch(error => {
+            console.error('Error fetching rejected landlords:', error);
+            overlayBody.innerHTML = '<p>Error loading rejected landlords.</p>';
+        });
+}
+            
+        }, 1000); // Simulate loading time of 1 second
+
+        overlay.classList.add('show'); // Show the overlay
+    }
+
+    function viewApprovedStudent(studentId, studentName, permanentAddress, studentCourse, studentGender, primaryKeyId, identificationPicPath) {
+    landlordDetailContainer.style.display = 'none'; // Hide landlord detail container
+    studentDetailContainer.style.display = 'block'; // Show student detail container
+
+    // Update the student ID display (this should be the primary key)
+    document.getElementById('student-id').innerText = `${primaryKeyId}`; // Show primary key ID
+
+    // Update the inner HTML to display the required information
+    const studentDetailContent = document.getElementById('student-detail-content');
+    studentDetailContent.innerHTML = `
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>Permanent Address:</strong> ${permanentAddress}</p>
+        <p><strong>Course:</strong> ${studentCourse}</p>
+        <p><strong>Gender:</strong> ${studentGender}</p>
+    `;
+
+    // Set the identification picture
+    const studentProfilePic = document.getElementById('student-profile-pic');
+    studentProfilePic.src = identificationPicPath; // Update this to the actual identification picture URL
+
+    // Hide all buttons for approved student view
+    const studentButtons = document.getElementById('student-buttons');
+    studentButtons.style.display = 'none'; // Hide all buttons
+}
+
+    function viewLandlord(landlordId, landlordName, landlordIdentificationPic) {
+    // Show the landlord detail container
+    const landlordDetailContainer = document.getElementById('landlord-detail-container');
+    landlordDetailContainer.style.display = 'block'; // Show the detail container
+
+    // Set the landlord name
+    document.getElementById('landlord-name').innerText = landlordName; // Display the landlord name
+
+    // Set the landlord ID
+    document.getElementById('landlord-id-display').innerText = landlordId; // Display the landlord ID
+    
+    // Set the landlord identification picture
+    const landlordIdentificationPicElement = document.getElementById('landlord-identification-pic');
+    landlordIdentificationPicElement.src = landlordIdentificationPic; // Update this to the actual identification picture URL
+
+    // Optionally, you can set a default profile picture or update it based on the landlord
+    const landlordProfilePic = document.getElementById('landlord-profile-pic');
+    landlordProfilePic.src = "path/to/default/profile-pic.jpg"; // Update this to the actual profile picture URL if available
+
+    // Hide all buttons for approved landlord view
+    const landlordButtons = document.getElementById('landlord-buttons');
+    landlordButtons.style.display = 'none'; // Hide all buttons
+}
+
+    function viewPendingStudent(studentId, studentName, studentCourse, primaryKeyId, proofOfEnrollmentPath, certificateOfEnrollmentPath, identificationPicPath) {
+    landlordDetailContainer.style.display = 'none'; // Hide landlord detail container
+    studentDetailContainer.style.display = 'block'; // Show student detail container
+
+    // Update the student ID display (this should be the primary key)
+    document.getElementById('student-id').innerText = `${primaryKeyId}`; // Show primary key ID
+
+    // Update the inner HTML to display the required information
+    const studentDetailContent = document.getElementById('student-detail-content');
+    studentDetailContent.innerHTML = `
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>Course:</strong> ${studentCourse}</p>
+    `;
+
+    // Set the identification picture
+    const studentProfilePic = document.getElementById('student-profile-pic');
+    studentProfilePic.src = identificationPicPath; // Update this to the actual identification picture URL
+
+    // Show buttons for pending student view
+    const studentButtons = document.getElementById('student-buttons');
+    studentButtons.style.display = 'flex'; // Show buttons for pending student view
+
+    // Update the proof of enrollment button to call openEnrollent with the correct path
+    const proofButton = document.querySelector('.proof-of-enrollment-button');
+    proofButton.onclick = function() {
+        openEnrollent(proofOfEnrollmentPath); // Pass the proof of enrollment path
+    };
+
+    // Call the function to check the certificate availability
+    checkCertificateAvailability(); // This will enable or disable the CE Form button based on the certificate status
+}
+
+    let currentBarangayPermit = ''; // Global variable to store the current Barangay's Permit URL
+
+    let currentBhousePhoto = ''; // Global variable to store the current boarding house photo URL
+
+    function viewPendingLandlord(landlordId, landlordName, barangayPermit, boardingHousePhoto, landlordIdentificationPic) {
+    // Store the Barangay's Permit, Boarding House Photo, and Landlord Identification Pic URLs
+    currentBarangayPermit = barangayPermit;
+    currentBhousePhoto = boardingHousePhoto; // Store the boarding house photo URL
+    currentLandlordIdentificationPic = landlordIdentificationPic; // Store the landlord identification picture URL
+
+    // Show the landlord detail container
+    const landlordDetailContainer = document.getElementById('landlord-detail-container');
+    landlordDetailContainer.style.display = 'block'; // Show the detail container
+
+    // Set the landlord name
+    document.getElementById('landlord-name').innerText = landlordName; // Display the landlord name
+
+    // Set the landlord ID
+    document.getElementById('landlord-id-display').innerText = landlordId; // Display the landlord ID
+
+    // Set the landlord identification picture
+    const landlordIdentificationPicElement = document.getElementById('landlord-identification-pic');
+    landlordIdentificationPicElement.src = landlordIdentificationPic; // Update this to the actual identification picture URL
+
+    // Show buttons for regular landlord view
+    const landlordButtons = document.getElementById('landlord-buttons');
+    landlordButtons.style.display = 'flex'; // Show buttons for landlord view
+}
+
+    function viewTemporaryApprovedStudent(studentId, studentName, permanentAddress, studentCourse, studentGender, primaryKeyId, identificationPicPath) {
+    tempappLandlordContainer.style.display = 'none'; // Hide landlord detail container
+    tempappStudentContainer.style.display = 'block'; // Show student detail container
+
+    // Update the student ID display (this should be the primary key)
+    document.getElementById('student-id').innerText = `${primaryKeyId}`; // Show primary key ID
+
+    // Update the inner HTML to display the required information
+    const tempappStudentContent = document.getElementById('temp-app-student-detail-content');
+    tempappStudentContent.innerHTML = `
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>Permanent Address:</strong> ${permanentAddress}</p>
+        <p><strong>Course:</strong> ${studentCourse}</p>
+        <p><strong>Gender:</strong> ${studentGender}</p>
+    `;
+
+    // Set the identification picture
+    const studentProfilePic = document.getElementById('student-profile-pic');
+    studentProfilePic.src = identificationPicPath; // Update this to the actual identification picture URL
+
+    // Set the identification picture in the new section
+    const identificationPic = document.getElementById('identification-pic');
+    identificationPic.src = identificationPicPath; // Update this to the actual identification picture URL
+
+    // Show buttons for temporary approved student view
+    const studentButtons = document.getElementById('student-buttons');
+    studentButtons.style.display = 'flex'; // Show buttons for temporary approved student view
+}
+    
+    function viewTemporaryApprovedLandlord(landlordId, landlordName, landlordIdentificationPic) {
+    // Hide the student container if it's visible
+    tempappStudentContainer.style.display = 'none';
+    // Show the landlord detail container
+    tempappLandlordContainer.style.display = 'block'; 
+
+    // Set the landlord ID
+    document.getElementById('landlord-id').innerText = `${landlordId}`; // Show landlord ID
+
+    // Set the landlord details
+    tempappLandlordContent.innerHTML = `
+        <p><strong>Name:</strong> ${landlordName}</p>
+    `;
+
+    // Update the landlord identification picture
+    const landlordIdentificationPicElement = document.getElementById('landlord-profile-pic');
+    landlordIdentificationPicElement.src = landlordIdentificationPic; // Set the identification picture source
+
+    // Show buttons for landlord view
+    const landlordButtons = document.getElementById('student-buttons'); // Ensure this ID matches your HTML
+    landlordButtons.style.display = 'flex'; // Show buttons for landlord view
+}
+   
+    function viewRejectedStudent(studentId, studentName, primaryKeyId, permanentAddress, identificationPicPath) {
+    rejectLandlordContainer.style.display = 'none'; // Hide landlord detail container
+    rejectStudentContainer.style.display = 'block'; // Show student detail container
+
+    // Update the student ID display (this should be the primary key)
+    document.getElementById('student-id').innerText = `Student ID: ${primaryKeyId}`; // Show primary key ID
+
+    // Update the inner HTML to display the required information
+    const rejectStudentContent = document.getElementById('reject-student-detail-content');
+    rejectStudentContent.innerHTML = `
+        <p><strong>Name:</strong> ${studentName}</p>
+        <p><strong>Permanent Address:</strong> ${permanentAddress}</p>
+    `;
+
+    // Set the profile picture
+    const studentProfilePic = document.getElementById('student-profile-pic');
+    studentProfilePic.src = "path/to/default/profile-pic.jpg"; // Set to default or another source if needed
+
+    // Set the identification picture
+    const identificationPic = document.getElementById('identification-pic');
+    identificationPic.src = identificationPicPath; // Update this to the actual identification picture URL
+
+    // Show only the Reason button for rejected student view
+    const studentButtons = document.getElementById('student-buttons');
+    studentButtons.style.display = 'flex'; // Show buttons for rejected student view
+}
+
+    function viewRejectedLandlord(landlordId, landlordName, landlordIdentificationPic) {
+    // Hide the rejected landlords list container
+    rejectLandlordContainer.style.display = 'none'; // Hide the rejected landlord list container
+
+    // Show the reject landlord detail container
+    const rejectLandlordDetailContainer = document.getElementById('reject-landlord-detail-container');
+    rejectLandlordDetailContainer.style.display = 'block'; // Show the reject landlord detail container
+
+    // Set the landlord name in the detail content
+    const rejectLandlordDetailContent = document.getElementById('reject-landlord-detail-content');
+    rejectLandlordDetailContent.innerHTML = `
+        <p><strong>Name:</strong> ${landlordName}</p>
+    `;
+
+    // Set the landlord ID below the profile picture
+    document.getElementById('landlord-id').innerText = `ID: ${landlordId}`; // Display the landlord ID
+}
+
+
+    
+    function closeOverlay() {
+        const overlay = document.querySelector('.overlay');
+        overlay.classList.remove('show'); // Hide the overlay
+    }
+
+    function closeDetail() {
+        studentDetailContainer.style.display = 'none'; // Hide student detail container
+    }
+
+    function closeLandlordDetail() {
+        landlordDetailContainer.style.display = 'none'; // Hide landlord detail container
+    }
+    
+    function closeTempAppStudentDetail() {
+        tempappStudentContainer.style.display = 'none';
+    }
+    
+    function closeTempAppLandlordDetail() {
+        tempappLandlordContainer.style.display = 'none';
+    }
+    
+    function rejectStudentCloseDetail() {
+        rejectStudentContainer.style.display = 'none';
+    }
+    
+    function rejectLandlordCloseDetail() {
+      rejectLandlordContainer.style.display = 'none'
+    }
+
+    function logout() {
+    // Show the logout confirmation modal
+    const logoutModal = document.getElementById('logoutModal');
+    logoutModal.style.display = 'flex'; // Show the modal
+
+    // Add event listeners for the buttons
+    document.getElementById('confirmLogout').onclick = function() {
+        // Redirect to the logout script
+        window.location.href = 'adlogout.php'; // Adjust the URL to your actual logout script
+    };
+
+    document.getElementById('cancelLogout').onclick = function() {
+        // Hide the modal
+        logoutModal.style.display = 'none';
+    };
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target === logoutModal) {
+            logoutModal.style.display = 'none'; // Hide the modal
+        }
+    };
+}
+
+    function openCEForm() {
+    // Get the student ID from the displayed content
+    const studentId = document.getElementById('student-id').innerText; 
+    const pdfFrame = document.getElementById('pdf-frame');
+    const modal = document.getElementById('ce-modal');
+
+    // Fetch the certificate of enrollment path from the server using the ID
+    fetch(`fetch_certificate.php?id=${studentId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const pdfPath = data.certificate_of_enrollment; // Get the path from the response
+                pdfFrame.src = pdfPath; // Set the source of the PDF
+                modal.style.display = 'flex'; // Show the modal
+            } else {
+                alert(data.message || 'Certificate of Enrollment not found.'); // Show the error message
+                // Optionally, disable the button if the certificate is not found or is empty
+                document.querySelector('.ce-form-button').disabled = true; // Disable the button
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching certificate:', error);
+            alert('An error occurred while fetching the certificate.');
+        });
+}
+
+function checkCertificateAvailability() {
+    const studentId = document.getElementById('student-id').innerText; 
+
+    // Fetch the certificate of enrollment path from the server using the ID
+    fetch(`fetch_certificate.php?id=${studentId}`)
+        .then(response => response.json())
+        .then(data => {
+            const ceButton = document.querySelector('.ce-form-button');
+            if (data.status === 'success') {
+                // Enable the button if the certificate exists and is not empty
+                ceButton.disabled = false; 
+            } else {
+                // Disable the button if the certificate does not exist or is empty
+                ceButton.disabled = true; 
+                alert(data.message || 'Certificate of Enrollment not found or is empty.'); // Show the error message
+            }
+        })
+        .catch(error => {
+            console.error('Error checking certificate:', error);
+            document.querySelector('.ce-form-button').disabled = true; // Disable the button on error
+        });
+}
+
+
+function closeCEForm() {
+    const modal = document.getElementById('ce-modal');
+    modal.style.display = 'none'; // Hide the modal
+    const pdfFrame = document.getElementById('pdf-frame');
+    pdfFrame.src = ''; // Clear the iframe source to stop loading the PDF
+}
+
+    function openBarangayCertificate() {
+    const modal = document.getElementById('barangay-permit-modal'); // Get the new modal
+    const enlargedImage = document.getElementById('enlarged-barangay-permit-image'); // Get the image element in the new modal
+    enlargedImage.src = currentBarangayPermit; // Set the source of the enlarged image to the Barangay's Permit URL
+    modal.style.display = 'flex'; // Show the modal
+}
+
+    function closeBarangayPermitModal() {
+    const modal = document.getElementById('barangay-permit-modal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+function openEnrollent(proofOfEnrollmentPath) {
+    const proofModal = document.getElementById('proof-of-enrollment-modal');
+    const enlargedProofImage = document.getElementById('enlarged-proof-image');
+
+    // Set the source for the modal image
+    enlargedProofImage.src = proofOfEnrollmentPath; // Use the proof of enrollment path
+
+    // Show the modal
+    proofModal.style.display = 'flex'; // Change to 'block' or 'flex' to show the modal
+}
+
+function closeProofOfEnrollmentModal() {
+    const modal = document.getElementById('proof-of-enrollment-modal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+    function openBhousePhoto() {
+    const modal = document.getElementById('bhouse-photo-modal'); // Get the new modal
+    const enlargedImage = document.getElementById('enlarged-bhouse-photo-image'); // Get the image element in the new modal
+    enlargedImage.src = currentBhousePhoto; // Set the source of the enlarged image to the boarding house photo URL
+    modal.style.display = 'flex'; // Show the modal
+}
+
+    function closeBhousePhotoModal() {
+    const modal = document.getElementById('bhouse-photo-modal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+    function approveStudent() {
+    const studentId = document.getElementById('student-id').innerText; // Get the primary key ID from the displayed content
+
+    // Send an AJAX request to approve the student
+    fetch('approve_student.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `student_id=${studentId}` // Send the primary key ID
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message); // Show success message
+            closeDetail(); // Close the detail view
+            // Optionally, refresh the list of students or update the UI accordingly
+        } else {
+            alert(data.message); // Show error message
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while approving the student.');
+    });
+}
+
+    function rejectStudent() {
+    const studentId = document.getElementById('student-id').innerText; // Get the primary key ID from the displayed content
+
+    // Confirm the rejection action
+    const confirmation = confirm('Are you sure you want to reject this student?');
+    if (confirmation) {
+        // Send an AJAX request to reject the student
+        fetch('reject_student.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `student_id=${studentId}` // Send the primary key ID
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message); // Show success message
+                closeDetail(); // Close the detail view
+                // Optionally, refresh the list of students or update the UI accordingly
+            } else {
+                alert(data.message); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while rejecting the student.');
+        });
+    } else {
+        alert('Rejection canceled.'); // Notify the user that the action was canceled
+    }
+}
+
+    function approveLandlord() {
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to approve this landlord?");
+    
+    // If the user clicks "Cancel", exit the function
+    if (!confirmation) {
+        return; // Exit the function if the user does not confirm
+    }
+
+    const landlordId = document.getElementById('landlord-id-display').innerText; // Get the landlord ID
+    const data = { id: landlordId }; // Prepare data to send
+
+    // Send a POST request to the server to update the landlord status
+    fetch('approve_landlord.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Convert data to JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Landlord approved successfully!');
+            // Optionally, you can close the detail container or refresh the list
+            closeLandlordDetail();
+        } else {
+            alert('Error approving landlord: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while approving the landlord.');
+    });
+}
+
+    function rejectLandlord() {
+    const landlordId = document.getElementById('landlord-id-display').innerText; // Get the landlord ID
+
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to reject this landlord?");
+    
+    // If the user clicks "Cancel", exit the function
+    if (!confirmation) {
+        return; // Exit the function if the user does not confirm
+    }
+
+    const data = { id: landlordId }; // Prepare data to send
+
+    // Send a POST request to the server to update the landlord status
+    fetch('reject_landlord.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Convert data to JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Landlord rejected successfully!');
+            // Optionally, you can close the detail container or refresh the list
+            closeLandlordDetail();
+        } else {
+            alert('Error rejecting landlord: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while rejecting the landlord.');
+    });
+}
+    
+    function temporaryapproveLandlord() {
+    const landlordId = document.getElementById('landlord-id-display').innerText; // Get the landlord ID
+
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to temporarily approve this landlord?");
+    
+    // If the user clicks "Cancel", exit the function
+    if (!confirmation) {
+        return; // Exit the function if the user does not confirm
+    }
+
+    const data = { id: landlordId }; // Prepare data to send
+
+    // Send a POST request to the server to update the landlord status
+    fetch('temporary_approve_landlord.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Convert data to JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Landlord temporarily approved successfully!');
+            // Optionally, you can close the detail container or refresh the list
+            closeLandlordDetail();
+        } else {
+            alert('Error temporarily approving landlord: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while temporarily approving the landlord.');
+    });
+}
+    
+    function temporaryapproveStudent() {
+    const studentId = document.getElementById('student-id').innerText; // Get the student ID from the displayed content
+
+    // Confirm the action
+    if (confirm("Are you sure you want to temporarily approve this student?")) {
+        // Send an AJAX request to update the student status
+        fetch('temporary_approve_student.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `student_id=${studentId}` // Send the student ID
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message); // Show success message
+                // Optionally, update the UI to reflect the change
+                document.querySelector('.temporary-approve-student-button').innerText = 'Temporary Approved'; // Change button text
+                document.querySelector('.temporary-approve-student-button').disabled = true; // Disable the button after approval
+            } else {
+                alert(data.message); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while temporarily approving the student.');
+        });
+    }
+}
+
+function approveTemporaryStudent() {
+    const studentId = document.getElementById('student-id').innerText; // Get the student ID from the displayed content
+
+    // Confirm the action
+    if (confirm("Are you sure you want to approve this student?")) {
+        // Send an AJAX request to update the student status
+        fetch('approve_student.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `student_id=${studentId}` // Send the student ID
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message); // Show success message
+                closeTempAppStudentDetail(); // Optionally close the detail view
+            } else {
+                alert(data.message); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while approving the student.');
+        });
+    }
+}
+
+function rejectTemporaryStudent() {
+    const studentId = document.getElementById('student-id').innerText; // Get the student ID from the displayed content
+
+    // Confirm the action
+    if (confirm("Are you sure you want to reject this student?")) {
+        // Send an AJAX request to update the student status
+        fetch('reject_student.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `student_id=${studentId}` // Send the student ID
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message); // Show success message
+                closeTempAppStudentDetail(); // Optionally close the detail view
+            } else {
+                alert(data.message); // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while rejecting the student.');
+        });
+    }
+}
+
+function approveTemporaryLandlord() {
+    const landlordId = document.getElementById('landlord-id').innerText; // Get the landlord ID
+
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to approve this temporary landlord?");
+    
+    // If the user clicks "Cancel", exit the function
+    if (!confirmation) {
+        return; // Exit the function if the user does not confirm
+    }
+
+    const data = { id: landlordId }; // Prepare data to send
+
+    // Send a POST request to the server to update the landlord status
+    fetch('approve_temporary_landlord.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Convert data to JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Temporary landlord approved successfully!');
+            // Optionally, you can close the detail container or refresh the list
+            closeTempAppLandlordDetail();
+        } else {
+            alert('Error approving temporary landlord: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while approving the temporary landlord.');
+    });
+}
+
+function rejectTemporaryLandlord() {
+    const landlordId = document.getElementById('landlord-id').innerText; // Get the landlord ID
+
+    // Show confirmation dialog
+    const confirmation = confirm("Are you sure you want to reject this temporary landlord?");
+    
+    // If the user clicks "Cancel", exit the function
+    if (!confirmation) {
+        return; // Exit the function if the user does not confirm
+    }
+
+    const data = { id: landlordId }; // Prepare data to send
+
+    // Send a POST request to the server to update the landlord status
+    fetch('reject_temporary_landlord.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // Convert data to JSON
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.success) {
+            alert('Temporary landlord rejected successfully!');
+            // Optionally, you can close the detail container or refresh the list
+            closeTempAppLandlordDetail();
+        } else {
+            alert('Error rejecting temporary landlord: ' + result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while rejecting the temporary landlord.');
+    });
+}
+
+// Function to open the image modal
+function openImageModal(imageSrc) {
+    const modal = document.getElementById('image-modal');
+    const enlargedImage = document.getElementById('enlarged-proof-image');
+    enlargedImage.src = imageSrc; // Set the source of the enlarged image
+    modal.style.display = 'flex'; // Show the modal
+}
+
+// Function to close the image modal
+function closeImageModal() {
+    const modal = document.getElementById('image-modal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+fetchApprovedStudents();
+fetchPendingStudents();
+
+// Set interval for live updates every 3 seconds (3000 milliseconds)
+setInterval(() => {
+    fetchApprovedStudents();
+    fetchPendingStudents();
+}, 1000);
+
+function rejectStudentReason() {
+    const modal = document.getElementById('reason-modal');
+    modal.style.display = 'flex'; // Show the modal
+}
+
+function closeReasonModal() {
+    const modal = document.getElementById('reason-modal');
+    modal.style.display = 'none'; // Hide the modal
+}
+
+function submitRejectionReason() {
+    const studentId = document.getElementById('student-id').innerText; // Get the student ID
+    const reason = document.getElementById('reason-input').value; // Get the reason input
+
+    // Validate the input
+    if (!reason) {
+        alert('Please enter a reason for rejection.');
+        return;
+    }
+
+    // Send the reason to the server
+    fetch('reject_student_reason.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `student_id=${studentId}&reason=${encodeURIComponent(reason)}` // Send the student ID and reason
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Reason submitted successfully!'); // Show success message
+            closeReasonModal(); // Close the modal
+            rejectStudentCloseDetail(); // Optionally close the detail view
+        } else {
+            alert(data.message); // Show error message
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while submitting the reason.');
+    });
+}
+</script>
+</body>
+</html>

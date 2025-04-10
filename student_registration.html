@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full height for centering */
+            overflow: hidden; /* Prevent scrolling on body */
+        }
+        h2 {
+            text-align: center;
+            font-family: 'Dancing Script', cursive; /* Cursive font */
+            font-size: 2.5em; /* Adjust font size as needed */
+            color: #142F48; /* Darkest navy blue */
+            margin-bottom: 20px; /* Space below the heading */
+            overflow: hidden; /* Ensures the text is hidden until animated */
+            white-space: nowrap; /* Prevents text wrapping */
+            width: 0; /* Start with width 0 for animation */
+            opacity: 0; /* Start with opacity 0 for fade-in effect */
+            animation: writing 4s forwards, fadeIn 0.5s forwards; /* Animation for writing effect and fade-in */
+        }
+        @keyframes writing {
+            from {
+                width: 0;
+                opacity: 0; /* Start invisible */
+            }
+            to {
+                width: 100%;
+                opacity: 1; /* Fade in to visible */
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0; /* Start invisible */
+            }
+            to {
+                opacity: 1; /* Fade in to visible */
+            }
+        }
+        .form-container {
+            max-width: 600px;
+            width: 100%; /* Full width for smaller screens */
+            max-height: 90vh; /* Limit height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px;
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+            background-color: #BDCCDC; /* Light blue-gray */
+            border: 2px solid #8199B1; /* Muted medium blue border */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .form-row div {
+            flex: 1;
+            margin-right: 10px;
+            min-width: 150px; /* Minimum width for smaller screens */
+        }
+        .form-row div:last-child {
+            margin-right: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #47647F; /* Deep blue-gray */
+        }
+        select, input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
+            width: 100%;
+            padding: 10px; /* Increased padding for comfort */
+            box-sizing: border-box;
+            border-radius: 8px; /* Rounded corners for inputs */
+            border: 1px solid #8199B1; /* Muted medium blue border */
+            transition: border-color 0.3s; /* Smooth transition for focus */
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+        }
+        select:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="file"]:focus {
+            border-color: #142F48; /* Darkest navy blue on focus */
+            outline: none; /* Remove default outline */
+        }
+        button {
+            width: 100%; /* Full width for button */
+            padding: 10px;
+            background-color: #47647F; /* Deep blue-gray for button */
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded corners for the button */
+            cursor: pointer;
+            margin: 0 auto; /* Center the button */
+            display: block; /* Make button a block element */
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+        button:hover {
+            background-color: #142F48; /* Darkest navy blue on hover */
+        }
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #47647F; /* Deep blue-gray */
+        }
+        .required-indicator {
+            color: red; /* Color for required field indicator */
+        }
+        .password-requirements {
+            font-size: 0.9em;
+            color: #47647F; /* Deep blue-gray */
+            margin-top: 5px;
+        }
+        .error-message {
+            color: red; /* Error message color */
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .length-indicator {
+            color: red; /* Length indicator color */
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            body {
+                overflow: auto; /* Allow body to scroll on mobile */
+            }
+            .form-container {
+                overflow-y: auto; /* Enable vertical scrolling for the form */
+            }
+            .form-row {
+                flex-direction: column; /* Stack vertically on small screens */
+            }
+            .form-row div {
+                margin-right: 0; /* Remove right margin */
+                margin-bottom: 10px; /* Add bottom margin for spacing */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Student Registration Form</h2>
+    <form id="registrationForm" action="student_submit_registration.php" method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="student_fname">First Name:<span class="required-indicator">*</span></label>
+                <input type="text" id="student_fname" name="student_fname" required>
+            </div>
+            <div class="form-group">
+                <label for="student_mname">Middle Initial:</label>
+                <input type="text" id="student_mname" name="student_mname" maxlength="1">
+            </div>
+            <div class="form-group">
+                <label for="student_lname">Last Name:<span class="required-indicator">*</span></label>
+                <input type="text" id="student_lname" name="student_lname" required>
+            </div>
+            <div class="form-group">
+                <label for="student_nextension">Ex.:</label>
+                <input type="text" id="student_nextension" name="student_nextension" maxlength="5" placeholder="e.g., Jr.">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="student_email">Email Address:<span class="required-indicator">*</span></label>
+            <input type="email" id="student_email" name="student_email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="student_password">Password:<span class="required-indicator">*</span></label>
+            <div class="password-container">
+                <input type="password" id="student_password" name="student_password" required>
+                <i class="fas fa-eye password-toggle-icon" id="togglePassword"></i>
+            </div>
+            <div class="password-requirements">
+                Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number. No symbols allowed.
+            </div>
+            <div class="error-message" id="passwordError" style="display: none;"></div>
+            <div class="length-indicator" id="lengthIndicator" style="color: red; display: none;">Password must be at least 8 characters long.</div>
+        </div>
+
+        <div class="form-group">
+            <label for="student_repassword">Retype Password:<span class="required-indicator">*</span></label>
+            <div class="password-container">
+                <input type="password" id="student_repassword" name="student_repassword" required>
+                <i class="fas fa-eye password-toggle-icon" id="toggleRePassword"></i>
+            </div>
+            <div class="error-message" id="rePasswordError" style="display: none;"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="student_paddress">Permanent Address:<span class="required-indicator">*</span></label>
+            <input type="text" id="student_paddress" name="student_paddress" required>
+        </div>
+
+        <div class="form-group">
+            <label for="student_gender">Gender:<span class="required-indicator">*</span></label>
+            <select id="student_gender" name="student_gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="student_college">College:<span class="required-indicator">*</span></label>
+            <select id="student_college" name="student_college" onchange="populateCourses()" required>
+                <option value="" disabled selected>Select College</option>
+                <option value="College of Education">College of Education</option>
+                <option value="College of Business Management">College of Business Management</option>
+                <option value="College of Engineering and Computational Sciences">College of Engineering and Computational Sciences</option>
+                <option value="College of Arts and Humanities">College of Arts and Humanities</option>
+                <option value="College of Sciences">College of Science</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="student_course">Course:<span class="required-indicator">*</span></label>
+            <select id="student_course" name="student_course" required>
+                <option value="" disabled selected>Select Course</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="student_type">Student Type:<span class="required-indicator">*</span></label>
+            <select id="student_type" name="student_type" onchange="toggleUploadFields()" required>
+                <option value="" disabled selected>Select Student Type</option>
+                <option value="Incoming Freshman">Incoming Freshman</option>
+                <option value="Old Student">Old Student</option>
+            </select>
+        </div>
+
+        <div class="form-group" id="incoming_freshman_fields" style="display: none;">
+            <label for="proof_of_enrollment">Upload Proof of Enrollment (Image):<span class="required-indicator">*</span></label>
+            <input type="file" id="proof_of_enrollment" name="proof_of_enrollment" accept="image/*" required>
+        </div>
+
+        <div class="form-group" id="old_student_fields" style="display: none;">
+            <label for="student_univ_id">Student University ID:<span class="required-indicator">*</span></label>
+            <input type="text" id="student_univ_id" name="student_univ_id" required>
+            <label for="certificate_of_enrollment" style="margin-top: 10px;">Upload Certificate of Enrollment (PDF):<span class="required-indicator">*</span></label>
+            <input type="file" id="certificate_of_enrollment" name="certificate_of_enrollment" accept="application/pdf" required>
+        </div>
+
+        <button type="button" onclick="handleSubmit()">Register</button>
+    </form>
+</div>
+
+<script>
+
+function handleSubmit() {
+    // Perform any additional validation here if needed
+    const password = document.getElementById('student_password').value;
+    const rePassword = document.getElementById('student_repassword').value;
+
+    // Check if passwords match
+    if (password !== rePassword) {
+        document.getElementById('rePasswordError').innerText = 'Passwords do not match.';
+        document.getElementById('rePasswordError').style.display = 'block';
+        return; // Prevent form submission
+    } else {
+        document.getElementById('rePasswordError').style.display = 'none'; // Hide error if passwords match
+    }
+
+    // If everything is valid, submit the form
+    document.getElementById('registrationForm').submit();
+}
+
+
+    function toggleUploadFields() {
+        const studentType = document.getElementById('student_type').value;
+        const incomingFreshmanFields = document.getElementById('incoming_freshman_fields');
+        const oldStudentFields = document.getElementById('old_student_fields');
+        
+        if (studentType === 'Incoming Freshman') {
+            incomingFreshmanFields.style.display = 'block';
+            oldStudentFields.style.display = 'none';
+        } else if (studentType === 'Old Student') {
+            incomingFreshmanFields.style.display = 'none';
+            oldStudentFields.style.display = 'block';
+        } else {
+            incomingFreshmanFields.style.display = 'none';
+            oldStudentFields.style.display = 'none';
+        }
+    }
+
+    function populateCourses() {
+    const collegeSelect = document.getElementById('student_college');
+    const courseSelect = document.getElementById('student_course');
+    const selectedCollege = collegeSelect.value;
+
+    // Clear previous options
+    courseSelect.innerHTML = '<option value="" disabled selected>Select Course</option>';
+
+    let courses = [];
+
+    switch (selectedCollege) {
+        case 'College of Education':
+            courses = [
+                'Bachelor of Elementary Education',
+                'Bachelor of Secondary Education Major in Mathematics',
+                'Bachelor of Secondary Education Major in English',
+                'Bachelor of Secondary Education Major in Science',
+                'Bachelor of Secondary Education Major in Filipino',
+                'Bachelor of Secondary Education Major in Values Education',
+                'Bachelor of Secondary Education Major in Social Studies'
+            ];
+            break;
+        case 'College of Business Management':
+            courses = [
+                'Bachelor of Science in Accountancy',
+                'Bachelor of Science in Business Administration',
+                'Bachelor of Science in Office Administration',
+                'Bachelor of Science in Entrepreneurship',
+                'Bachelor of Science in Economics'
+            ];
+            break;
+        case 'College of Engineering and Computational Sciences':
+            courses = [
+                'Bachelor of Science in Civil Engineering',
+                'Bachelor of Science in Sanitary Engineering',
+                'Bachelor of Science in Computer Science',
+                'Bachelor of Science in Mathematics',
+                'Bachelor of Science in Information Technology',
+                'Bachelor of Engineering Technology in Electrical Engineering Technology',
+                'Bachelor of Engineering Technology in Mechanical Engineering Technology (Major in Automotive Technology)',
+                'Bachelor of Engineering Technology in Mechanical Engineering Technology (Major in Refrigeration and Air-Conditioning Technology)'
+            ];
+            break;
+        case 'College of Arts and Humanities':
+            courses = [
+                'Bachelor of Arts in Communication'
+            ];
+            break;
+        case 'College of Sciences':
+            courses = [
+                'Bachelor of Science in Biology',
+                'Bachelor of Science in Geology'
+            ];
+            break;
+    }
+
+    // Populate the course select with new options
+    courses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = course; // Use the course name as the value
+        option.textContent = course;
+        courseSelect.appendChild(option);
+    });
+}
+
+    // Password visibility toggle
+    const togglePassword = document.getElementById("togglePassword");
+    const toggleRePassword = document.getElementById("toggleRePassword");
+    const passwordField = document.getElementById("student_password");
+    const rePasswordField = document.getElementById("student_repassword");
+    const passwordError = document.getElementById("passwordError");
+    const rePasswordError = document.getElementById("rePasswordError");
+    const lengthIndicator = document.getElementById("lengthIndicator");
+
+    togglePassword.addEventListener("click", function () {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+    });
+
+    toggleRePassword.addEventListener("click", function () {
+        const type = rePasswordField.getAttribute("type") === "password" ? "text" : "password";
+        rePasswordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+    });
+
+    // Remove required indicator on input
+    const requiredFields = document.querySelectorAll('input[required], select[required]');
+    requiredFields.forEach(field => {
+        field.addEventListener('input', function() {
+            const indicator = this.nextElementSibling;
+            if (indicator && indicator.classList.contains('required-indicator')) {
+                indicator.style.display = 'none'; // Hide the indicator
+            }
+        });
+    });
+
+    // Validate password requirements
+    passwordField.addEventListener('input', function() {
+        const password = passwordField.value;
+        passwordError.style.display = 'none'; // Reset error message
+        lengthIndicator.style.display = password.length < 8 ? 'block' : 'none'; // Show/hide length indicator
+
+        // Check for symbols
+        if (/[^a-zA-Z0-9]/.test(password)) {
+            passwordError.textContent = 'Password cannot contain symbols.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all lowercase
+        if (password === password.toLowerCase()) {
+            passwordError.textContent = 'Password must contain at least one uppercase letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all uppercase
+        if (password === password.toUpperCase()) {
+            passwordError.textContent = 'Password must contain at least one lowercase letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all numbers
+        if (/^\d+$/.test(password)) {
+            passwordError.textContent = 'Password must contain at least one letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for at least one uppercase, one lowercase, and one number
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+            passwordError.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, and one number.';
+            passwordError.style.display = 'block';
+            return;
+        }
+    });
+
+    // Validate retype password
+    rePasswordField.addEventListener('input', function() {
+        if (passwordField.value !== rePasswordField.value) {
+            rePasswordError.style.display = 'block';
+            rePasswordError.textContent = 'Passwords do not match.';
+        } else {
+            rePasswordError.style.display = 'none';
+        }
+    });
+
+    passwordField.addEventListener('input', function() {
+        if (passwordField.value === rePasswordField.value) {
+            rePasswordError.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Map with Voice Directions</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://code.responsivevoice.org/responsivevoice.js"></script> <!-- No API key needed -->
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        .leaflet-popup-content {
+            color: black; /* Set popup text color to black */
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaflet Map with Voice Directions</h1>
+    <div id="map"></div>
+    <button onclick="testVoice()">Test Voice</button>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([51.505, -0.09], 13); // Default view set to London
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Function to test voice synthesis
+        function testVoice() {
+            if (typeof responsiveVoice !== "undefined") {
+                responsiveVoice.speak("Hello, this is a test of the voice synthesis.", "UK English Male");
+            } else {
+                console.log("ResponsiveVoice is not loaded.");
+            }
+        }
+
+        // Function to speak directions
+        function speakDirections(directions) {
+            if (typeof responsiveVoice !== "undefined") {
+                responsiveVoice.speak(directions, "UK English Male");
+            } else {
+                console.log("ResponsiveVoice is not loaded.");
+            }
+        }
+
+        // Example of setting a destination and speaking directions
+        map.on('click', function(e) {
+            var destination = e.latlng;
+            var directions = `You clicked at latitude ${destination.lat} and longitude ${destination.lng}.`;
+            speakDirections(directions);
+            L.marker(destination).addTo(map).bindPopup(directions).openPopup();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Dashboard</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> <!-- Include Material Icons -->
+    <!-- Leaflet CSS (Stable version) -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+
+    <!-- Leaflet JS (Stable version) -->
+    <script src="leaflet/leaflet.js"></script>
+
+    <!-- Leaflet Routing Machine (Stable version) -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-control-geocoder/2.4.0/Control.Geocoder.js"></script>
+    <style>
+        *{
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+          }
+
+        body{
+            font-family: Arial, sans-serif;
+            height: 100vh; /* Full height of the viewport */
+            background-color: #8199B1; /* Muted Medium Blue */
+            color: black; /* Default text color */
+            transition: background-color 0.3s, color 0.3s; /* Smooth transition for dark/light mode */
+        }
+
+        .dark-mode {
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color */
+        }
+        
+        .dark-mode .house-detail {
+          background: #ffffff23;
+          border: 2px solid white;
+        }
+        
+        .dark-mode .room-card {
+          background: #ffffff23;
+          border: 2px solid white;
+        }
+        
+        .dark-mode .main-picture-container,
+        .dark-mode .mini-house-image, 
+        .dark-mode .rooms-containe, .dark-mode .house-details-content{
+          border: 2px solid white;
+        }
+        
+        .dark-mode .save-button {
+          background-color:  #333;
+        }
+
+        .dark-mode .header {
+            background-color: #1e1e1e; /* Darker header */
+        }
+
+        .dark-mode .left-column {
+            background-color: #1c1c1c; /* Dark left column */
+        }
+
+        .dark-mode .right-column {
+            background-color: #1c1c1c; /* Dark right column */
+        }
+
+        .dark-mode .house-card {
+            background: linear-gradient(270deg, #2c3e50, #3a3a3a); /* Darker gradient for house cards */
+        }
+
+        .dark-mode .button-container button,
+        .dark-mode .search-button,
+        .dark-mode .icon-button {
+            background-color: #333; /* Dark button background */
+            color: #e0e0e0; /* Light button text */
+        }
+
+        .dark-mode .button-container button:hover,
+        .dark-mode .search-button:hover,
+        .dark-mode .icon-button:hover,
+        .dark-mode .save-button:hover {
+            background-color: #555; /* Darker button on hover */
+        }
+
+        .dark-mode .view-button {
+            color: #f39c12; /* Keep view button color */
+        }
+
+        .dark-mode .dropdown-buttons button {
+            background-color: #333; /* Dark button background */
+            color: #e0e0e0; /* Light button text */
+        }
+
+        .dark-mode .dropdown-buttons button:hover {
+            background-color: #555; /* Darker button on hover */
+        }
+
+        .header {
+            display: flex; /* Use flexbox for header */
+            justify-content: space-between; /* Space between items */
+            align-items: center; /* Center items vertically */
+            background-color: #2c3e50; /* Darker blue for header */
+            padding: 20px; /* Padding for header */
+            color: white; /* Text color for better contrast */
+        }
+
+        .icon-container {
+            display: flex;
+            gap: 30px; /* Space between icons */
+            padding-left: 20%;
+        }
+
+        .icon-button {
+            width: 40px; /* Width of the icon button */
+            height: 40px; /* Height of the icon button */
+            border-radius: 50%; /* Make it circular */
+            background-color: #8199B1; /* Muted Medium Blue for buttons */
+            color: white; /* Text color for buttons */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor on hover */
+            display: flex; /* Use flexbox for centering */
+            align-items: center; /* Center items vertically */
+            justify-content: center; /* Center items horizontally */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .icon-button:hover {
+            background-color: #f39c12; /* Darker shade on hover */
+            transition: 1.0s;
+        }
+        
+/* Styles for the generate house icon */
+.generate-house-icon {
+    font-size: 200px; /* Set the size of the house icon */
+    background: linear-gradient(45deg, #f39c12, #e65d22); /* Gradient background */
+    -webkit-background-clip: text; /* Clip the background to the text */
+    -webkit-text-fill-color: transparent; /* Make the text color transparent */
+    animation: gradientAnimation 3s ease infinite; /* Apply gradient animation */
+    margin-bottom: 10px; /* Space below the icon */
+}
+
+/* Gradient animation for the house icon */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+        .search-container {
+            position: relative;
+            display: flex; /* Use flexbox for search container */
+            align-items: center; /* Center items vertically */
+        }
+
+        .disclaimer-overlay {
+          display: none; /* Hidden by default */
+          position: absolute; /* Position absolutely within the search container */
+          top: calc(100% + 10px); /* Position below the search container with a small gap */
+          left:40%; /* Center horizontally */
+          transform: translateX(-50%); /* Adjust for centering */
+          background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+          color: black; /* Text color */
+          font-size: 12px; /* Font size */
+          padding: 8px 12px; /* Padding for the overlay */
+          border-radius: 5px; /* Rounded corners */
+          white-space: nowrap; /* Prevent text from wrapping */
+          z-index: 1000; /* Ensure it appears above other elements */
+          pointer-events: none; /* Prevent the overlay from blocking interactions */
+        }
+
+        /* Arrow for the chat box overlay */
+        .disclaimer-overlay::before {
+    content: ''; /* Required for pseudo-element */
+    position: absolute; /* Position absolutely within the overlay */
+    top: -10px; /* Position above the overlay */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for centering */
+    border-width: 5px; /* Size of the arrow */
+    border-style: solid;
+    border-color: transparent transparent rgba(255, 255, 255, 0.8) transparent; /* Arrow pointing up with semi-transparent white */
+}
+
+        .search-container:hover .disclaimer-overlay {
+          display: block; /* Show the overlay on hover */
+        }
+
+        .search-input {
+            padding: 10px; /* Padding for input */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            margin-right: 10px; /* Space between input and button */
+        }
+
+        .search-button {
+            padding: 10px; /* Padding for button */
+            background-color: #8199B1; /* Muted Medium Blue for button */
+            color: white; /* Text color for button */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        .search-button:hover {
+            background-color: #6a8da3; /* Darker shade on hover */
+        }
+
+        .container {
+            display: flex;
+            height: calc(100% - 80px); /* Full height minus header height */
+        }
+
+        .left-column {
+            flex: 0 0 20%; /* Left column takes 20% of the width */
+            border: 1px solid #ccc; /* Optional: Add a border for visibility */
+            background-color: #47647F; /* Deep Blue-Gray */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            padding: 20px; /* Add some padding */
+            justify-content: flex-start; /* Align items to the top */
+        }
+
+        .right-column {
+          background-image: url('animation/backgroundlogo.png'); /* Replace with your image path */
+          background-size: contain; /* Cover the entire area */
+          background-position: center; /* Center the image */
+          background-repeat: no-repeat; /* Prevent the image from repeating */
+          
+            flex: 0 0 80%; /* Right column takes 80% of the width */
+            border: 1px solid #ccc; /* Optional: Add a border for visibility */
+            background-color: #142F48; /* Darkest Navy Blue */
+            padding: 20px; /* Add some padding */
+            color: white; /* Text color for right column */
+            overflow: hidden; /* Hide overflow */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center content horizontally */
+            align-items: center; /* Center content vertically */
+            flex-direction: column; /* Stack items vertically */
+            position: relative; /* Add this line */
+        }
+
+        .background-squares {
+            position: absolute; /* Position relative to the right column */
+            top: 0; /* Align to the top */
+            left: 0; /* Align to the left */
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            pointer-events: none; /* Allow clicks to pass through */
+            overflow: hidden; /* Hide overflow */
+        }
+
+        .square {
+            position: absolute; /* Position absolutely within the container */
+            background-color: rgba(255, 255, 255, 0.1); /* Low opacity white background */
+            border-radius: 5px; /* Rounded corners */
+            animation: fade 3s ease-in-out infinite; /* Apply fade animation */
+        }
+
+        @keyframes fade {
+            0% {
+                opacity: 0; /* Start invisible */
+            }
+            50% {
+                opacity: 1; /* Fully visible */
+            }
+            100% {
+                opacity: 0; /* Fade out */
+            }
+        }
+
+        .name {
+            font-family: 'Dancing script', Cursive; /* Cursive font for the name */
+            font-size: 50px; /* Font size for the name */
+            color: white; /* Text color */
+            margin-bottom: 20px; /* Space below the name */
+            text-align: center; /* Center text */
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column; /* Arrange buttons in a column */
+            gap: 30px; /* Space between buttons */
+            width: 100%; /* Make buttons take full width */
+            margin-top: 20px; /* Add gap between name and buttons */
+        }
+
+        button {
+            padding: 10px; /* Padding for buttons */
+            background-color: #8199B1; /* Muted Medium Blue for buttons */
+            color: white; /* Text color for buttons */
+            border: none; /* Remove border */
+            border-radius: 20px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+        }
+
+        button:hover {
+            background-color: #f39c12; /* Darker shade on hover */
+            transition: 1.0s;
+        }
+
+        .button-clicked {
+            background-color: #6a8da3; /* Darker shade to indicate clicked state */
+            transition: 1.0s;
+        }
+
+.house-list {
+    display: grid; /* Use grid layout for the house list */
+    grid-template-columns: repeat(4, 1fr); /* Create 3 equal columns */
+    gap: 20px; /* Space between house cards */
+    padding: 20px; /* Add padding around the list */
+    max-height: 100%; /* Set a maximum height for the house list */
+    overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.5); /* Start smaller */
+        opacity: 0; /* Start invisible */
+    }
+    100% {
+        transform: scale(1); /* End at original size */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+@keyframes zoomIn {
+    0% {
+        transform: scale(1); /* Original size */
+    }
+    50% {
+        transform: scale(1.1); /* Zoom in */
+    }
+    100% {
+        transform: scale(1); /* Return to original size */
+    }
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.house-card {
+    background: linear-gradient(270deg, #2c3e50, #47647F); /* Gradient colors */
+    background-size: 400% 400%; /* Size of the gradient */
+    border-radius: 10px; /* Rounded corners */
+    padding: 15px; /* Padding inside the card */
+    width: 100%; /* Full width of the grid cell */
+    height: 350px; /* Set height to fit nicely in the layout */
+    color: white; /* Text color for house details */
+    text-align: center; /* Center text */
+    transition: transform 0.3s; /* Smooth transform on hover */
+    animation: gradientAnimation 5s ease infinite, popIn 0.5s forwards; /* Apply gradient and pop-in animations */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+    display: flex; /* Use flexbox for centering */
+    flex-direction: column; /* Stack items vertically */
+    justify-content: space-between; /* Space items evenly */
+    align-items: center; /* Center items horizontally */
+    opacity: 0; /* Start invisible */
+}
+
+.menu-button {
+    position: absolute; /* Position the button absolutely */
+    top: 10px; /* Distance from the top */
+    right: 10px; /* Distance from the right */
+    background: none; /* No background */
+    border: none; /* No border */
+    cursor: pointer; /* Pointer cursor on hover */
+    color: white; /* Color of the icon */
+    font-size: 24px; /* Size of the icon */
+    z-index: 10; /* Ensure it is above other elements */
+}
+
+.main-image-container {
+    width: 100%; /* Full width of the card */
+    height: 150px; /* Fixed height for the image container */
+    border: 2px solid #f39c12; /* Border for the image container */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Hide overflow */
+    position: relative; /* Position relative for absolute children */
+}
+
+.main-image-container::before {
+    content: ""; /* Required for pseudo-element */
+    position: absolute; /* Position it absolutely within the container */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    right: 0; /* Stretch to the right */
+    bottom: 0; /* Stretch to the bottom */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
+    z-index: 1; /* Place it above the image but below other content */
+}
+
+.house-image {
+    width: 100%; /* Full width of the container */
+    height: 100%; /* Full height of the container */
+    object-fit: contain; /* Ensure the entire image is visible */
+    animation: zoomIn 1s forwards; /* Apply zoom-in animation */
+    position: relative; /* Position relative to allow z-index to work */
+    z-index: 2; /* Place it above the overlay */
+}
+
+.house-info {
+    width: 100%; /* Ensure house info takes full width */
+    margin-top: 10px; /* Add gap above the house info */
+}
+
+.house-name {
+    font-family: 'Dancing Script', cursive; /* Use a cursive font */
+    font-weight: bold; /* Make the text bold */
+    font-size: 18px; /* Adjust font size as needed */
+    margin: 5px 0; /* Space between elements */
+    width: 100%; /* Ensure it takes full width */
+    text-align: center; /* Center text */
+}
+
+.house-name-1 {
+    font-family: 'Dancing Script', cursive; /* Use a cursive font */
+    font-weight: bold; /* Make the text bold */
+    font-size: 24px; /* Increase font size for better readability */
+    margin: 5px 0; /* Space between elements */
+    width: 100%; /* Ensure it takes full width */
+    text-align: center; /* Center text */
+    color: white; /* Ensure the text color is visible */
+}
+
+.house-price {
+    margin: 5px 0; /* Space between elements */
+    width: 100%; /* Ensure each element takes full width */
+    font-size: 16px; /* Set a fixed font size */
+    text-align: center; /* Center text */
+}
+
+.house-price-1 {
+    font-size: 24px; /* Set a larger font size for visibility */
+    color: #f39c12; /* Highlight color for the price */
+    font-weight: bold; /* Make the text bold */
+    text-align: center; /* Center text */
+    animation: popInOut 2s infinite; /* Animation for pop-in/pop-out */
+}
+
+@keyframes popInOut {
+    0% {
+        transform: scale(1); /* Original size */
+        opacity: 1; /* Fully visible */
+    }
+    50% {
+        transform: scale(1.1); /* Slightly larger */
+        opacity: 1; /* Fully visible */
+    }
+    100% {
+        transform: scale(1); /* Return to original size */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+.house-location {
+    margin: 5px 0; /* Space between elements */
+    width: 100%; /* Ensure each element takes full width */
+    font-size: 14px; /* Set a slightly smaller font size for location */
+    text-align: center; /* Center text */
+    white-space: normal; /* Allow text to wrap */
+    overflow-wrap: break-word; /* Break long words if necessary */
+}
+
+.house-details-content {
+    position: relative; /* Position relative for absolute children */
+    padding: 20px; /* Add some padding */
+    border: 2px solid #f39c12; /* Example border for the house details */
+    border-radius: 10px; /* Rounded corners */
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+}
+
+.house-location-container {
+    overflow: hidden; /* Hide overflow */
+    white-space: nowrap; /* Prevent text from wrapping */
+    width: 100%; /* Full width of the container */
+    position: relative; /* Position relative for absolute children */
+}
+
+.house-location-1 {
+    font-size: 20px; /* Default font size */
+    color: white; /* Text color */
+    text-align: center; /* Center text */
+    animation: marquee 10s linear infinite; /* Animation for scrolling */
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(100%); /* Start off-screen to the right */
+    }
+    100% {
+        transform: translateX(-100%); /* Move off-screen to the left */
+    }
+}
+
+.house-description-container {
+    border: 2px solid #f39c12; /* Border color */
+    border-radius: 8px; /* Rounded corners */
+    padding: 15px; /* Padding inside the container */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    opacity: 0.8; /* Low opacity for the container */
+    margin: 10px 0; /* Margin for spacing */
+}
+
+#Description {
+    color: white; /* Text color */
+    font-size: 16px; /* Font size */
+    text-align: center; /* Center text */
+}
+
+.landlord-name {
+    font-family: 'Dancing Script', cursive; /* Use a cursive font */
+    font-weight: bold; /* Make the text bold */
+    font-size: 20px; /* Set a font size (optional) */
+    color: white; /* Text color (optional) */
+    text-align: center; /* Center text (optional) */
+    margin: 10px 0; /* Margin for spacing (optional) */
+}
+
+.house-card:hover {
+    transform: scale(1.05); /* Scale up on hover */
+}
+
+        .view-button {
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            cursor: pointer; /* Pointer cursor on hover */
+            color: #f39c12; /* Color of the view icon */
+            font-size: 24px; /* Size of the view icon */
+            margin-top: 10px; /* Space above the button */
+        }
+
+        .view-button:hover {
+            color: #e67e22; /* Darker shade on hover */
+        }
+
+        .map-container {
+            display: none; /* Initially hidden */
+            height: calc(100% - 40px); /* Full height minus padding */
+            width: 100%; /* Full width */
+            border-radius: 10px; /* Rounded corners */
+            margin-top: 20px; /* Space above the map */
+        }
+
+        /* Styles for the profile view */
+        .profile-view {
+            display: none; /* Initially hidden */
+            width: 100%; /* Full width */
+            color: white; /* Text color */
+            text-align: center; /* Center text */
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+
+        .profile-container {
+            border: 2px solid #f39c12; /* Border color */
+            border-radius: 10px; /* Rounded corners */
+            padding: 30px; /* Increased padding inside the container */
+            width: 300px; /* Width of the profile container */
+            height: 500px; /* Height of the profile container */
+            text-align: center; /* Center text */
+            background-color: transparent; /* Semi-transparent background */
+            display: flex; /* Use flexbox for centering */
+            flex-direction: column; /* Stack items vertically */
+            justify-content: center; /* Center items vertically */
+            align-items: center; /* Center items horizontally */
+            margin: auto; /* Center the profile view */
+            position: relative; /* Position relative for absolute elements */
+        }
+
+        .profile-pic-container {
+            position: relative; /* Position relative for absolute elements */
+            margin-bottom: 20px; /* Space below the profile picture */
+            width: 120px; /* Width of the profile picture area */
+            height: 120px; /* Height of the profile picture area */
+            border-radius: 50%; /* Make it circular */
+            border: 4px solid #f39c12; /* Thicker border for the profile picture */
+            overflow: hidden; /* Hide overflow to maintain circle shape */
+        }
+
+        .profile-pic {
+            width: 100%; /* Full width of the container */
+            height: 100%; /* Full height of the container */
+            border-radius: 50%; /* Make it circular */
+            object-fit: cover; /* Cover the area without distortion */
+            cursor: pointer; /* Pointer cursor on hover */
+        }
+
+        .profile-info {
+            background-color: rgba(255, 255, 255, 0.2); /* Low opacity background */
+            padding: 15px; /* Increased padding inside the info container */
+            border-radius: 5px; /* Rounded corners */
+            color: white; /* Text color */
+            font-size: 18px; /* Increased font size for info */
+        }
+
+        /* Styles for the edit button */
+        .edit-button {
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background: none; 
+            border: none; 
+            color: #f39c12; 
+            cursor: pointer; 
+            font-size: 24px;
+            transition: transform 0.3s ease; /* Add transition for animation */
+        }
+        
+        .edit-button:hover {
+            background: transparent;
+            color: #f35b12;
+            transition: 2.0s;
+        }
+
+        /* Styles for the save button */
+        .save-button {
+            margin-top: 20px; 
+            background-color: #f39c12; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            padding: 10px; 
+            cursor: pointer; 
+        }
+        
+        .save-button:hover {
+            background-color: #f35b12;
+            transition: 2.0s;
+        }
+        
+        #generatedHouseList {
+    display: none; /* Initially hidden */
+    margin-top: 20px; 
+    border: 2px solid #f39c12; /* Border for the house list */
+    padding: 20px; /* Padding inside the house list */
+    width: 100%; /* Full width */
+    border-radius: 10px; /* Rounded corners */
+    overflow: auto; /* Enable scrolling if needed */
+    position: relative; /* Ensure it doesn't overlap with other content */
+}
+
+        /* Styles for the square button container */
+        .square-button-container {
+    display: none; /* Initially hidden */
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    gap: 50px; /* Increased space between buttons */
+    margin-top: 20px; /* Space above the container */
+    width: 600px; /* Set a fixed width for the container */
+    height: 600px; /* Set a fixed height for the container to make it square */
+    position: relative; /* Ensure it doesn't overlap with other content */
+}
+        
+        /* Styles for the settings square button container */
+        #settingsSquareButtonContainer {
+            display: none; /* Initially hidden */
+            display: grid; /* Use grid layout */
+            grid-template-columns: repeat(2, 1fr); /* Two columns */
+            gap: 50px; /* Space between buttons */
+            margin-top: 20px; /* Space above the container */
+            width: 600px; /* Set a fixed width for the container */
+            height: 300px; /* Set a fixed height for the container to make it square */
+        }
+        
+        .square-button {
+            background-color: transparent; /* Transparent background */
+            color: white; /* Text color */
+            border: 5px solid #f39c12; /* Border */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the button */
+            text-align: center; /* Center text */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: border-color 0.3s; /* Smooth transition for hover effect */
+            width: 100%; /* Make the button take full width */
+            height: 100%; /* Make the button take full height */
+            display: flex; /* Use flexbox for centering */
+            flex-direction: column; /* Stack icon and text vertically */
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+            font-size: 16px; /* Font size for the text */
+            animation: float 2s ease-in-out infinite; /* Apply float animation */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px); /* Move up */
+            }
+            100% {
+                transform: translateY(0); /* Move back down */
+            }
+        }
+
+        /* Add staggered animation delays */
+        .square-button:nth-child(1) {
+            animation-delay: 0s; /* No delay for the first button */
+        }
+        .square-button:nth-child(2) {
+            animation-delay: 0.2s; /* 0.2s delay for the second button */
+        }
+        
+        .square-button:nth-child(3) {
+            animation-delay: 0.4s; /* 0.4s delay for the third button */
+        }
+        
+        .square-button:nth-child(4) {
+            animation-delay: 0.6s; /* 0.6s delay for the fourth button */
+        }
+
+        .square-button:hover {
+            border-color: #47647F; /* Change border color on hover */
+        }
+
+        .square-button .material-icons {
+            font-size: 60px; /* Increased size of the icon */
+            margin-bottom: 10px; /* Space below the icon */
+        }
+
+        .square-button-text {
+            font-size: 16px; /* Font size for the text */
+        }
+
+        /* Styles for the general dropdown container */
+        #generalDropdown {
+            display: none; /* Initially hidden */
+            margin-top: 20px; 
+            border: 2px solid #f39c12; /* Border for the dropdown container */
+            padding: 20px; /* Padding inside the dropdown container */
+            width: 100%; /* Full width */
+            border-radius: 10px; /* Rounded corners */
+            position: relative; /* Position relative for absolute elements */
+        }
+
+        #generalDropdown h3 {
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+        #generalDropdown select {
+            width: 100%; /* Full width for dropdowns */
+            padding: 10px; /* Padding for dropdowns */
+            margin-bottom: 20px; /* Space below each dropdown */
+            border-radius: 5px; /* Rounded corners */
+            border: 1px solid #ccc; /* Border for dropdowns */
+        }
+
+        /* Styles for the policies dropdown container */
+        #policiesDropdown {
+            display: none; /* Initially hidden */
+            margin-top: 20px; 
+            border: 2px solid #f39c12; /* Border for the dropdown container */
+            padding: 20px; /* Padding inside the dropdown container */
+            width: 100%; /* Full width */
+            border-radius: 10px; /* Rounded corners */
+            position: relative; /* Position relative for absolute elements */
+        }
+
+        #policiesDropdown h3 {
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+        #policiesDropdown select {
+            width: 100%; /* Full width for dropdowns */
+            padding: 10px; /* Padding for dropdowns */
+            margin-bottom: 20px; /* Space below each dropdown */
+            border-radius: 5px; /* Rounded corners */
+            border: 1px solid #ccc; /* Border for dropdowns */
+        }
+
+        /* Styles for the securities dropdown container */
+        #securitiesDropdown {
+            display: none; /* Initially hidden */
+            margin-top: 20px; 
+            border: 2px solid #f39c12; /* Border for the dropdown container */
+            padding: 20px; /* Padding inside the dropdown container */
+            width: 100%; /* Full width */
+            border-radius: 10px; /* Rounded corners */
+            position: relative; /* Position relative for absolute elements */
+        }
+
+        #securitiesDropdown h3 {
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+        #securitiesDropdown select {
+            width: 100%; /* Full width for dropdowns */
+            padding: 10px; /* Padding for dropdowns */
+            margin-bottom: 20px; /* Space below each dropdown */
+            border-radius: 5px; /* Rounded corners */
+            border: 1px solid #ccc; /* Border for dropdowns */
+        }
+
+        /* Styles for the buttons at the bottom of the dropdown */
+        .dropdown-buttons {
+            display: flex;
+            justify-content: space-between; /* Space between buttons */
+            margin-top: 20px; /* Space above the buttons */
+        }
+
+        .dropdown-buttons button {
+            padding: 10px 20px; /* Padding for buttons */
+            background-color: #f39c12; /* Button color */
+            color: white; /* Text color */
+            border: none; /* Remove border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer cursor on hover */
+            transition: background-color 0.3s; /* Smooth transition for hover effect */
+            margin-right: 10px; /* Space between Previous and Next buttons */
+        }
+
+        .dropdown-buttons button:hover {
+            background-color: #e67e22; /* Darker shade on hover */
+        }
+
+        /* Styles for the amenities dropdown container */
+        #amenitiesDropdown {
+            display: none; /* Initially hidden */
+            margin-top: 20px; 
+            border: 2px solid #f39c12; /* Border for the dropdown container */
+            padding: 20px; /* Padding inside the dropdown container */
+            width: 100%; /* Full width */
+            border-radius: 10px; /* Rounded corners */
+            position: relative; /* Position relative for absolute elements */
+        }
+
+        #amenitiesDropdown h3 {
+            margin-bottom: 10px; /* Space below the heading */
+        }
+
+        #amenitiesDropdown select {
+            width: 100%; /* Full width for dropdowns */
+            padding: 10px; /* Padding for dropdowns */
+            margin-bottom: 20px; /* Space below each dropdown */
+            border-radius: 5px; /* Rounded corners */
+            border: 1px solid #ccc; /* Border for dropdowns */
+        }
+
+        /* Cursive text styles */
+        .cursive-text {
+            font-family: 'Dancing Script', cursive; /* Cursive font */
+            font-size: 24px; /* Larger font size for cursive text */
+            font-weight: bold; /* Bold text */
+            color: white; /* White color for visibility */
+            margin-bottom: 10px; /* Space below the cursive text */
+            text-align: center; /* Center text */
+            position: relative; /* Position relative for absolute positioning */
+            top: -20px; /* Move the text above the dropdown border */
+        }
+
+        /* Styles for the settings view */
+        .settings-view {
+            display: none; /* Initially hidden */
+            width: 100%; /* Full width */
+            color: white; /* Text color */
+            text-align: center; /* Center text */
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+
+        /* Styles for the house details section */
+        .house-details {
+            display: none; /* Initially hidden */
+            width: 100%; /* Full width */
+            color: white; /* Text color */
+            text-align: center; /* Center text */
+            margin-top: 20px; /* Space above the details */
+            overflow: auto;
+        }
+
+        .house-details-content {
+            border: 2px solid #f39c12; /* Border color and thickness */
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the border */
+            background-color: transparent; /* Background color for better visibility */
+            color: white; /* Text color */
+            margin-top: 20px; /* Space above the details */
+        }
+
+.main-picture-container {
+    position: relative; /* Position relative for absolute children */
+    border: 2px solid #f39c12; /* Border for the main picture container */
+    border-radius: 10px; /* Rounded corners */
+    margin-bottom: 20px; /* Space below the main picture */
+    overflow: hidden; /* Hide overflow */
+    height: 500px; /* Set a fixed height */
+}
+
+.main-house-image {
+    width: 100%; /* Full width of the container */
+    height: 100%; /* Full height of the container */
+    object-fit: contain; /* Ensure the entire image is visible */
+    position: relative; /* Position relative to allow z-index to work */
+    z-index: 2; /* Place it above the overlay */
+}
+
+.main-picture-container::before {
+    content: ""; /* Required for pseudo-element */
+    position: absolute; /* Position it absolutely within the container */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    right: 0; /* Stretch to the right */
+    bottom: 0; /* Stretch to the bottom */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
+    z-index: 1; /* Place it below the image */
+}
+
+.mini-picture-container {
+    display: flex; /* Use flexbox for mini pictures */
+    justify-content: space-between; /* Space between mini pictures */
+    margin-bottom: 20px; /* Space below the mini pictures */
+    height: 300px; /* Set a fixed height */
+    position: relative; /* Position relative for absolute children */
+}
+
+.mini-image-wrapper {
+    position: relative; /* Position relative for absolute children */
+    width: 32%; /* Each mini image takes up about a third of the container */
+    height: 100%; /* Full height of the container */
+    overflow: hidden; /* Hide overflow */
+}
+
+.mini-house-image {
+    border: 2px solid #f39c12; /* Border for mini house images */
+    border-radius: 10px; /* Rounded corners */
+    width: 100%; /* Full width of the wrapper */
+    height: 100%; /* Full height of the wrapper */
+    object-fit: contain; /* Ensure the entire image is visible */
+    position: relative; /* Position relative to allow z-index to work */
+    z-index: 2; /* Place it above the overlay */
+}
+
+.mini-image-wrapper::before {
+    content: ""; /* Required for pseudo-element */
+    position: absolute; /* Position it absolutely within the wrapper */
+    top: 0; /* Align to the top */
+    left: 0; /* Align to the left */
+    right: 0; /* Stretch to the right */
+    bottom: 0; /* Stretch to the bottom */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with 50% opacity */
+    z-index: 1; /* Place it below the image */
+}
+
+/* Remove the overlay from the mini picture container */
+.mini-picture-container::before {
+    display: none; /* No overlay for mini images */
+}
+
+.view-icon-button {
+    position: absolute; /* Position the button absolutely */
+    bottom: 10px; /* Distance from the bottom */
+    right: 10px; /* Distance from the right */
+    background: rgba(255, 255, 255, 0.7); /* Semi-transparent background */
+    border: none; /* Remove default button border */
+    border-radius: 50%; /* Make the button circular */
+    cursor: pointer; /* Change cursor to pointer */
+    padding: 5px; /* Padding for the button */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Add shadow for better visibility */
+    z-index: 3; /* Ensure the button is above the overlay */
+}
+
+.view-icon-button .material-icons {
+    font-size: 20px; /* Icon size */
+    color: black; /* Icon color */
+}
+
+/* Modal styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0, 0, 0, 0.8); /* Black background with opacity */
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%; /* Width of the image */
+    max-width: 700px; /* Max width of the image */
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+        
+        .@keyframes float {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px); /* Move up */
+            }
+            100% {
+                transform: translateY(0); /* Move back down */
+            }
+        }
+        
+        .house-details-columns {
+            display: flex; /* Use flexbox for house details */
+            justify-content: center; /* Center columns horizontally */
+            align-items: center; /* Center columns vertically */
+            margin: 50px 0; /* Add 50px margin on top and bottom */
+            height: 500px; /* Set height for the columns */
+        }
+        
+        .house-detail {
+            border: 2px solid #f39c12; /* Border for house detail containers */
+            background: #2c3e50;
+            border-radius: 10px; /* Rounded corners */
+            padding: 20px; /* Padding inside the detail containers */
+            width: 45%; /* Make it slightly less than half to fit two columns */
+            text-align: center; /* Center text */
+            margin: 0 10px; /* Add margin between columns */
+            display: flex; /* Use flexbox for centering content */
+            flex-direction: column; /* Stack items vertically */
+            justify-content: center; /* Center content vertically */
+            height: 100%; /* Full height of the parent */
+            animation: float 2s ease-in-out infinite; /* Apply the floating animation */
+        }
+        
+        .house-detail:nth-child(1) {
+            animation-delay: 0s; /* No delay for the first column */
+        }
+        
+        .house-detail:nth-child(2) {
+            animation-delay: 0.5s; /* Delay for the second column */
+        }
+        
+        .icon-container-details {
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center the icon */
+            align-items: center; /* Center the icon vertically */
+            margin-bottom: 10px; /* Space below the icon */
+        }
+        
+        .house-icon-details {
+            font-size: 40px; /* Size of the icon */
+            color: #f39c12; /* Color of the icon */
+            border: 2px solid #f39c12; /* Border for the circular effect */
+            border-radius: 50%; /* Make it circular */
+            padding: 10px; /* Padding inside the circle */
+            background-color: rgba(255, 255, 255, 0.1); /* Background color for the icon */
+            width: 60px; /* Fixed width for the circular icon */
+            height: 60px; /* Fixed height for the circular icon */
+            display: flex; /* Use flexbox for centering the icon */
+            justify-content: center; /* Center the icon horizontally */
+            align-items: center; /* Center the icon vertically */
+        }
+        
+        .house-detail h3 {
+            font-size: 24px; /* Increase font size for the title */
+            margin-bottom: 10px; /* Space below the title */
+            font-family: 'Dancing Script', cursive; /* Cursive font for the title */
+            font-weight: bold; /* Bold text for the title */
+        }
+        
+        .house-detail p {
+            font-size: 18px; /* Increase font size for paragraphs */
+            margin: 5px 0; /* Space between paragraphs */
+        }
+        
+        .rooms-container {
+    border: 2px solid #f39c12; /* Border for rooms container */
+    border-radius: 10px; /* Rounded corners */
+    padding: 10px; /* Padding inside the rooms container */
+    margin-top: 20px; /* Space above the rooms section */
+    text-align: center; /* Center the text */
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+    display: flex; /* Use flexbox for centering */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+}
+        
+        .room-card-container {
+    display: flex; /* Use flexbox for layout */
+    justify-content: center; /* Center the room cards */
+    flex-wrap: wrap; /* Allow wrapping of cards */
+    gap: 40px; /* Increase space between cards to 40px */
+    margin-top: 20px; /* Add a gap of 20px above the room card container */
+    width: 100%; /* Full width of the container */
+}
+
+        .room-card {
+    background-color: transparent; /* Make the background transparent */
+    border: 2px solid #f39c12; /* Border color */
+    background: #2c3e50; /* Background color */
+    border-radius: 10px; /* Rounded corners */
+    width: 120px; /* Fixed width for the room card */
+    height: 200px; /* Fixed height for the room card */
+    display: flex; /* Use flexbox for centering content */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    padding: 10px; /* Padding inside the card */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    margin-bottom: 15px; /* Space between room cards */
+}
+
+        .room-door {
+    font-size: 70px; /* Increase the size of the door icon */
+    color: #f39c12; /* Color of the door icon */
+    margin-bottom: 10px; /* Space below the icon */
+}
+        
+        .back-button {
+            position: fixed; /* Fix the button position */
+            top: 80px; /* Distance from the top */
+            right: 10px; /* Distance from the right */
+            background-color: transparent; /* Transparent background */
+            border: none; /* No border */
+            cursor: pointer; /* Pointer cursor on hover */
+            z-index: 1000; /* Ensure it is above other elements */
+        }
+
+        .back-button .material-icons {
+            font-size: 36px; /* Size of the icon */
+            color: #f39c12; /* Color of the icon */
+        }
+        
+.recommended-route {
+    color: orange; /* Set text color for recommended route to orange */
+}
+
+.alternative-route {
+    color: red; /* Set text color for alternative routes to red */
+}
+
+.leaflet-popup-content {
+    color: black; /* Set popup text color to black */
+}
+
+.leaflet-routing-container {
+    background-color: rgba(255, 255, 255, 0.8); /* White background with 80% opacity */
+    border-radius: 5px; /* Optional: Add rounded corners */
+    padding: 10px; /* Optional: Add some padding */
+    color: black; /* Set text color to black */
+}
+
+.custom-marker {
+    position: relative; /* Position relative for the arrow */
+}
+
+.marker-icon {
+    background-color: #47647F; /* Deep blue-gray for the circular background */
+    border-radius: 50%; /* Circular shape */
+    width: 40px; /* Width of the marker */
+    height: 40px; /* Height of the marker */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+}
+
+.marker-icon .material-icons {
+    font-size: 24px; /* Size of the house icon */
+    color: #ECF0F6; /* Lightest shade for the house icon */
+}
+
+.arrow {
+    position: absolute; /* Position absolute for the arrow */
+    bottom: -10px; /* Position below the marker */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center the arrow */
+    width: 0; 
+    height: 0; 
+    border-left: 5px solid transparent; 
+    border-right: 5px solid transparent;
+    border-top: 10px solid #142F48; /* Darkest navy blue for the arrow */
+}
+
+/* Route Button Styles */
+.route-button {
+    background-color: #f39c12; /* Button color */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Padding */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    display: inline-block; /* Ensure it behaves like a block element for centering */
+    margin-top: 5px; /* Space above the button */
+}
+
+.route-button:hover {
+    background-color: #e67e22; /* Darker shade on hover */
+}
+
+/* Remove Route Button Styles */
+.remove-route-button {
+    background-color: #e74c3c; /* Red color for remove route */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 5px 10px; /* Padding */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+    display: inline-block; /* Ensure it behaves like a block element for centering */
+    margin-top: 5px; /* Space above the button */
+}
+
+.remove-route-button:hover {
+    background-color: #c0392b; /* Darker shade on hover */
+}
+
+.@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0); /* Original position */
+    }
+    40% {
+        transform: translateY(-10px); /* Move up */
+    }
+    60% {
+        transform: translateY(-5px); /* Move down slightly */
+    }
+}
+
+.user-marker {
+    background-color: #f39c12; /* Bright color for visibility */
+    border-radius: 50%; /* Circular shape */
+    width: 40px; /* Width of the marker */
+    height: 40px; /* Height of the marker */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Shadow for depth */
+}
+
+.user-marker .material-icons {
+    font-size: 24px; /* Size of the person icon */
+    color: white; /* White color for the icon */
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin: 0 2px;
+    border-radius: 50%;
+    background-color: #f39c12; /* Color of the dots */
+    animation: loading 1s infinite;
+}
+
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+.dot:nth-child(4) {
+    animation-delay: 0.6s;
+}
+
+@keyframes loading {
+    0%, 80%, 100% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.5);
+    }
+}
+
+#noResultsMessage {
+    display: none; /* Initially hidden */
+    text-align: center; /* Center text */
+    margin-top: 20px; /* Space above the message */
+    padding: 10px; /* Padding inside the message */
+    border: 2px solid #f39c12; /* Border color */
+    background-color: transparent; /* Make background transparent */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width */
+    max-width: 400px; /* Maximum width */
+    margin-left: auto; /* Center horizontally */
+    margin-right: auto; /* Center horizontally */
+    position: relative; /* Position relative to avoid overlap */
+    z-index: 10; /* Ensure it appears above other content */
+}
+
+#noResultsMessage span {
+    color: white; /* Text color */
+}
+
+.logo-container {
+    display: flex; /* Center the logo */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    margin-bottom: 20px; /* Space below the logo */
+}
+
+.logo {
+    max-width: 90%; /* Increase this value to make the logo larger */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 150px; /* Set a maximum height for the logo */
+}
+
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    animation: fadeIn 0.3s; /* Fade-in animation */
+}
+
+.modal-content {
+    background-color: #ECF0F6; /* Lightest shade */
+    border-radius: 10px; /* Rounded corners */
+    padding: 20px; /* Padding inside the modal */
+    text-align: center; /* Center text */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    animation: slideIn 0.3s; /* Slide-in animation */
+}
+
+.modal-buttons {
+    display: flex; /* Use flexbox for button layout */
+    justify-content: space-around; /* Space between buttons */
+    margin-top: 20px; /* Space above buttons */
+}
+
+.modal-button {
+    background-color: #8199B1; /* Muted medium blue */
+    color: white; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding for buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.modal-button:hover {
+    background-color: #47647F; /* Deep blue-gray on hover */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.alert {
+    padding: 20px;
+    background-color: #8199B1;
+    color: white;
+    position: fixed;
+    z-index: 1;
+    left: 60%;
+    top: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px;
+    width: 300px;
+    text-align: center;
+}
+
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 20px;
+    line-height: 20px;
+    cursor: pointer;
+}
+        
+   </style>
+</head>
+<body>
+    <div class="header">
+        <div class="icon-container">
+            <button class="icon-button" onclick="showProfile(); toggleButtonClick(this);">
+                <span class="material-icons">person</span> <!-- Profile Icon -->
+            </button>
+            <button class="icon-button" onclick="showMap(); toggleButtonClick(this);">
+                <span class="material-icons">map</span> <!-- Map Icon -->
+            </button>
+            <button class="icon-button" onclick="fetchHouses(); toggleButtonClick(this);">
+                <span class="material-icons">home</span> <!-- Home Icon -->
+            </button>
+        </div>
+        
+       <div class="search-container">
+    <input type="text" class="search-input" id="searchInput" placeholder="Search...">
+    <button class="search-button" onclick="searchHouses()">Search</button>
+    <div id="searchDisclaimer" class="disclaimer-overlay">Note: Only name and address are accepted.</div> <!-- Overlay disclaimer -->
+</div>
+
+    </div>
+    <div class="container">
+        <div class="left-column">
+            <div class="logo-container">
+              <img src="animation/logo.png" alt="BH Finder Logo" class="logo">
+            </div>
+            <div class="button-container">
+                <button onclick="showSquareButtons()">Generate</button>
+                <button onclick="showSettings(); toggleButtonClick(this)">Settings</button>
+                <button onclick="logout()">Log Out</button>
+                <button onclick="toggleButtonClick(this)">About</button> <!-- New About button -->
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="background-squares"></div> <!-- Background squares container -->
+            <div class="house-list" id="houseList">
+    <!-- House Cards will be dynamically fetched and inserted here -->
+</div>
+
+            <div id="noResultsMessage" style="display: none; text-align: center; margin-top: 10px; padding: 10px; border: 2px solid #f39c12; border-radius: 5px;">
+    <span style="color: white;">No boarding houses found matching your search criteria.</span>
+</div>
+    
+             <div id="loadingIndicator" style="display: none; text-align: center; margin-top: 10px;">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+</div>
+            
+            <div id="map" class="map-container"></div> <!-- Map container -->
+            
+            <div class="profile-view" id="profileView" style="display: none;">
+    <div class="profile-container">
+        <div class="profile-pic-container">
+            <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="loadProfilePic(event)">
+            <img id="profilePic" src="https://via.placeholder.com/150" alt="Profile Picture" class="profile-pic" onclick="document.getElementById('profilePicInput').click();">
+        </div>
+        <input type="text" id="profileName" class="info-detail" readonly style="font-weight: bold; font-size: 24px; text-align: center; margin: 10px 0; width: 80%; background-color: transparent; border: none; color: white;"> <!-- Profile Name Input -->
+        <div class="profile-info">
+            <p>
+                <span>Location:</span>
+                <input type="text" id="profileLocation" class="info-detail" readonly>
+            </p>
+            <p>
+                <span>Department:</span>
+                <input type="text" id="profileDepartment" class="info-detail" readonly>
+            </p>
+            <p>
+                <span>Course:</span>
+                <input type="text" id="profileCourse" class="info-detail" readonly>
+            </p>
+        </div>
+    </div>
+</div>
+            
+            <div class="square-button-container" id="squareButtonContainer" style="display: none;">
+                <button class="square-button" onclick="showGeneralDropdown()">
+                    <span class="material-icons">info</span> <!-- General Icon -->
+                    <div class="square-button-text">General</div>
+                </button>
+                <button class="square-button" onclick="showPoliciesDropdown()">
+                    <span class="material-icons">policy</span> <!-- Policies Icon -->
+                    <div class="square-button-text">Policies</div>
+                </button>
+                <button class="square-button" onclick="showSecuritiesDropdown()">
+                    <span class="material-icons">security</span> <!-- Securities Icon -->
+                    <div class="square-button-text">Securities</div>
+                </button>
+                <button class="square-button" onclick="showAmenitiesDropdown()">
+                    <span class="material-icons">home_work</span> <!-- Amenities Icon -->
+                    <div class="square-button-text">Amenities</div>
+                </button>
+            </div>
+            <!-- New Settings Square Button Container -->
+            <div class="square-button-container" id="settingsSquareButtonContainer" style="display: none;">
+                <button class="square-button" onclick="toggleDarkMode()">
+                    <span class="material-icons">dark_mode</span> <!-- Dark Mode Icon -->
+                    <div class="square-button-text">Dark Mode</div>
+                </button>
+                <button class="square-button" onclick="toggleLightMode()">
+                    <span class="material-icons">light_mode</span> <!-- Light Mode Icon -->
+                    <div class="square-button-text">Light Mode</div>
+                </button>
+            </div>
+            
+            <div id="generalDropdown" style="display: none; margin-top: 20px; border: 2px solid #f39c12; padding: 20px; width: 100%; border-radius: 10px; position: relative;">
+              <p style="margin-bottom: 40px;">Please select 1-4 options to generate boarding houses. Selecting more than 4 options may not yield any results.</p>
+   
+              <div class="cursive-text">General Requirements</div> <!-- Cursive text for General -->
+              <button class="back-button" onclick="showSquareButtons()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #f39c12; cursor: pointer; font-size: 24px;">
+                <span class="material-icons">close</span> <!-- Back Icon -->
+                </button>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                  <div>
+                    <h3>Gender Requirements:</h3>
+                    <select id="genderRequirements">
+                <option>Default</option>
+                <option>Both</option>
+                <option>Male</option>
+                <option>Female</option>
+            </select>
+        </div>
+        <div>
+            <h3>Distance From University:</h3>
+            <select id="distanceFromUniversity">
+                <option>Default</option>
+                <option>Near</option>
+                <option>Moderate</option>
+                <option>Far</option>
+            </select>
+        </div>
+        <div>
+            <h3>Rental Price:</h3>
+            <select id="rentalPrice">
+                <option>Default</option>
+                <option>Cheap</option>
+                <option>Moderate</option>
+                <option>Expensive</option>
+            </select>
+        </div>
+        <div>
+            <h3>Accommodation Type:</h3>
+            <select id="accommodationType">
+                <option>Default</option>
+                <option>Room Space</option>
+                <option>Bed Space</option>
+            </select>
+        </div>
+        <div>
+            <h3>Kitchen Type:</h3>
+            <select id="kitchenType">
+                <option>Default</option>
+                <option>Shared</option>
+                <option>Exclusive</option>
+            </select>
+        </div>
+        <div>
+            <h3>Toilet Type:</h3>
+            <select id="toiletType">
+                <option>Default</option>
+                <option>Shared</option>
+                <option>Exclusive</option>
+            </select>
+        </div>
+        <div>
+            <h3>Landlord Quarters:</h3>
+            <select id="landlordQuarters">
+                <option>Default</option>
+                <option>Same Building</option>
+                <option>Nearby</option>
+                <option>Far from boarding house</option>
+            </select>
+        </div>
+    </div>
+    <div class="dropdown-buttons">
+        <button onclick="generateHouses('general')">Generate</button>
+        <button type="button" onclick="clearGeneralDropdowns()">Clear</button> <!-- Clear Button -->
+        <button onclick="next('policies')">Next</button>
+    </div>
+</div>
+
+
+            <div id="policiesDropdown" style="display: none; margin-top: 20px; border: 2px solid #f39c12; padding: 20px; width: 100%; border-radius: 10px; position: relative;">
+              <p style="margin-bottom: 40px;">Please select 1-4 options to generate boarding houses. Selecting more than 4 options may not yield any results.</p>
+    <div class="cursive-text">Policies</div> <!-- Cursive text for Policies -->
+    <button class="back-button" onclick="showSquareButtons()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #f39c12; cursor: pointer; font-size: 24px;">
+        <span class="material-icons">close</span> <!-- Back Icon -->
+    </button>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <div>
+            <h3>Pet Policy:</h3>
+            <select id="petPolicy">
+                <option>Default</option>
+                <option>Allowed</option>
+                <option>Not Allowed</option>
+            </select>
+        </div>
+        <div>
+            <h3>Visitor Policy:</h3>
+            <select id="visitorPolicy">
+                <option>Default</option>
+                <option>Limited</option>
+                <option>Not Allowed</option>
+            </select>
+        </div>
+        <div>
+            <h3>Noise Policy:</h3>
+            <select id="noisePolicy">
+                <option>Default</option>
+                <option>Strict</option>
+                <option>Moderate</option>
+                <option>Low</option>
+            </select>
+        </div>
+        <div>
+            <h3>Curfew:</h3>
+            <select id="curfewPolicy">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </div>
+    </div>
+    <div class="dropdown-buttons">
+        <button onclick="generateHouses('policies')">Generate</button>
+        <button type="button" onclick="clearPoliciesDropdowns()">Clear</button> <!-- Clear Button -->
+        <button onclick="nextPolicies()">Next</button>
+        <button onclick="showGeneralDropdown()" style="margin-left: 10px;">Previous</button> <!-- Previous Button -->
+    </div>
+</div>
+
+            <div id="securitiesDropdown" style="display: none; margin-top: 20px; border: 2px solid #f39c12; padding: 20px; width: 100%; border-radius: 10px; position: relative;">
+              <p style="margin-bottom: 40px;">Please select 1-4 options to generate boarding houses. Selecting more than 4 options may not yield any results.</p>
+    <div class="cursive-text">Securities</div> <!-- Cursive text for Securities -->
+    <button class="back-button" onclick="showSquareButtons()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #f39c12; cursor: pointer; font-size: 24px;">
+        <span class="material-icons">close</span> <!-- Back Icon -->
+    </button>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <div>
+            <h3>Fire Extinguisher:</h3>
+            <select id="fireExtinguisher">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>None</option>
+            </select>
+        </div>
+        <div>
+            <h3>Surveillance Camera:</h3>
+            <select id="surveillanceCamera">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>None</option>
+            </select>
+        </div>
+        <div>
+            <h3>Fence Material:</h3>
+            <select id="fenceMaterial">
+                <option>Default</option>
+                <option>Metal</option>
+                <option>Wood</option>
+                <option>Concrete</option>
+                <option>None</option>
+            </select>
+        </div>
+        <div>
+            <h3>Building Material:</h3>
+            <select id="buildingMaterial">
+                <option>Default</option>
+                <option>Wood</option>
+                <option>Concrete</option>
+                <option>Mixed</option>
+            </select>
+        </div>
+    </div>
+    <div class="dropdown-buttons">
+        <button onclick="generateHouses('securities')">Generate</button>
+        <button type="button" onclick="clearSecuritiesDropdowns()">Clear</button> <!-- Clear Button -->
+        <button onclick="nextSecurities()">Next</button>
+        <button onclick="showPoliciesDropdown()" style="margin-left: 10px;">Previous</button> <!-- Previous Button -->
+    </div>
+</div>
+
+            <div id="amenitiesDropdown" style="display: none; margin-top: 20px; border: 2px solid #f39c12; padding: 20px; width: 100%; border-radius: 10px; position: relative;">
+              <p style="margin-bottom: 40px;">Please select 1-4 options to generate boarding houses. Selecting more than 4 options may not yield any results.</p>
+    <div class="cursive-text">Amenities</div> <!-- Cursive text for Amenities -->
+    <button class="back-button" onclick="showSquareButtons()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #f39c12; cursor: pointer; font-size: 24px;">
+        <span class="material-icons">close</span> <!-- Back Icon -->
+    </button>
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+        <div>
+            <h3>Wi-Fi Availability:</h3>
+            <select id="wifiAvailability" onchange="toggleWifiBilling()">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </div>
+        <div id="wifiBillingContainer" style="display: none;">
+            <h3>Wi-Fi Billing:</h3>
+            <select id="wifiBilling">
+                <option>Default</option>
+                <option>Free</option>
+                <option>Included In Rent</option>
+                <option>Separated Bill</option>
+            </select>
+        </div>
+        <div>
+            <h3>Electricity Included in Rent:</h3>
+            <select id="electricityIncluded" onchange="toggleElectricityBill()">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </div>
+        <div id="electricityBillContainer" style="display: none;">
+            <h3>Electricity Bill:</h3>
+            <select id="electricityBill">
+                <option>Default</option>
+                <option>Metered</option>
+                <option>Fixed</option>
+            </select>
+        </div>
+        <div>
+            <h3>Water Included in Rent:</h3>
+            <select id="waterIncluded" onchange="toggleWaterBill()">
+                <option>Default</option>
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+        </div>
+        <div id="waterBillContainer" style="display: none;">
+            <h3>Water Bill:</h3>
+            <select id="waterBill">
+                <option>Default</option>
+                <option>Metered</option>
+                <option>Fixed</option>
+            </select>
+        </div>
+    </div>
+    <div class="dropdown-buttons">
+        <button onclick="generateHouses('amenities')">Generate</button>
+        <button type="button" onclick="clearAmenitiesDropdowns()">Clear</button> <!-- Clear Button -->
+        <button onclick="nextAmenities()">Next</button>
+        <button onclick="showSecuritiesDropdown()" style="margin-left: 10px;">Previous</button> <!-- Previous Button -->
+    </div>
+</div>
+            <div id="generatedHouseList" style="display: none; margin-top: 20px; border: 2px solid #f39c12; padding: 20px; width: 100%; border-radius: 10px; position: relative;">
+    <button class="back-button" onclick="showSquareButtons()" style="position: absolute; top: 10px; right: 10px; background: none; border: none; color: #f39c12; cursor: pointer; font-size: 24px;">
+        <span class="material-icons">arrow_back</span> <!-- Back Icon -->
+    </button>
+    <h3>Generated House List</h3>
+    <div class="generated-house-list" id="generatedList" style="display: flex; flex-wrap: wrap; gap: 20px;">
+        <!-- Generated house cards will be inserted here -->
+    </div>
+</div>
+            <div class="settings-view" id="settingsView" style="display: none;">
+                <h2>Settings</h2>
+                <p>This is the settings page. You can add your settings options here.</p>
+            </div>
+            
+<!-- House Details View -->
+<div class="house-details" id="houseDetails" style="display: none;">
+    <div class="house-details-content">
+        <div class="main-picture-container">
+            <img id="mainHouseImage" src="https://via.placeholder.com/600x400" alt="Main House" class="main-house-image">
+            <button class="view-icon-button">
+                <span class="material-icons">visibility</span>
+            </button>
+        </div>
+        <div class="mini-picture-container">
+            <div class="mini-image-wrapper">
+                <img id="miniImage1" src="https://via.placeholder.com/150" alt="Mini House 1" class="mini-house-image">
+                <button class="view-icon-button">
+                    <span class="material-icons">visibility</span>
+                </button>
+            </div>
+            <div class="mini-image-wrapper">
+                <img id="miniImage2" src="https://via.placeholder.com/150" alt="Mini House 2" class="mini-house-image">
+                <button class="view-icon-button">
+                    <span class="material-icons">visibility</span>
+                </button>
+            </div>
+            <div class="mini-image-wrapper">
+                <img id="miniImage3" src="https://via.placeholder.com/150" alt="Mini House 3" class="mini-house-image">
+                <button class="view-icon-button">
+                    <span class="material-icons">visibility</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="house-details-columns">
+            <div class="house-detail">
+                <div class="icon-container-details">
+                    <span class="material-icons house-icon-details">house</span> <!-- House Icon -->
+                </div>
+                <h3>House Details</h3>
+                <p id="houseName" class="house-name-1"></p> <!-- House Name -->
+                <div class="house-location-container">
+                    <p id="houseLocation" class="house-location-1"></p> <!-- House Location -->
+                </div>
+                <p id="housePrice" class="house-price-1"></p> <!-- House Price -->
+                <p id="houseGender" class="house-gender-1"></p> <!-- House Gender -->
+                <div class="house-description-container">
+                    <p id="houseDescription"></p> <!-- House Description -->
+                </div>
+            </div>
+            <div class="house-detail">
+                <div class="icon-container-details">
+                    <span class="material-icons house-icon-details" style="background-image: url(''); background-size: cover; border-radius: 50%; width: 80px; height: 80px;">
+                        <img id="landlordIdentificationPic" src="" alt="Landlord's Identification Picture" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </span> <!-- Person Icon -->
+                </div>
+                <h3>Contact</h3>
+                <p id="landlordName" class="landlord-name"></p> <!-- Landlord Name -->
+                <p id="landlordContact"></p> <!-- Landlord Contact Number -->
+                <p id="landlordAddress"></p> <!-- Landlord Permanent Address -->
+            </div>
+        </div>
+        <div class="rooms-container">
+            <h3>Rooms</h3>
+            <div class="room-card-container" id="roomCardContainer">
+                <!-- Room cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+    <button class="back-button" onclick="hideHouseDetails()">
+        <span class="material-icons">close</span> <!-- X Icon -->
+    </button>
+    <!-- Modal Structure -->
+    <div id="imageModal" class="modal">
+        <span class="close" id="closeModal">&times;</span>
+        <img class="modal-content" id="modalImage" alt="Large View">
+        <div id="caption"></div>
+    </div>
+
+    <div id="loadingIndicator" style="display: none; text-align: center; margin-top: 10px;">
+        <span>Loading...</span> <!-- You can replace this with a spinner if you have one -->
+    </div>
+</div>
+    </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+    <div class="modal-content">
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to log out?</p>
+        <div class="modal-buttons">
+            <button class="modal-button" id="confirmLogout">Yes</button>
+            <button class="modal-button" id="cancelLogout">No</button>
+        </div>
+    </div>
+</div>
+
+   <div id="customAlert" class="alert" style="display: none;">
+    <span class="closebtn" onclick="closeAlert()">&times;</span>
+    <strong>Warning!</strong> You have selected more than 4 options. Please select 1-4 options to generate boarding houses.
+</div>
+
+    <script>
+
+let map; // Declare the map variable globally
+let userMarker; // Keep track of the user's location marker
+let routeControl; // Keep track of the route control
+let userLocation = null; // Global variable to store user's location
+
+function showMap() {
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Hide the house list and square button container
+    document.querySelector('.house-list').style.display = 'none';
+    document.getElementById('squareButtonContainer').style.display = 'none';
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+
+    //Show the map container
+    document.getElementById('map').style.display = 'block';
+
+    // Initialize the map
+    map = L.map('map').fitWorld();
+
+    // Load OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Get user's current location
+    getLocation();
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    function showPosition(position) {
+        var lat = position.coords.latitude;
+        var lng = position.coords.longitude;
+
+        // Store user's location
+        userLocation = { lat: lat, lng: lng };
+
+        // Set map view and add user marker with a person icon
+        map.setView([lat, lng], 14);
+        userMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+                className: 'user-marker', // Custom class for the user marker
+                html: `<span class="material-icons">person</span>`, // Use person icon
+                iconSize: [40, 40], // Size of the icon
+                iconAnchor: [20, 40] // Anchor point of the icon
+            })
+        }).addTo(map)
+        .bindPopup("You are here").openPopup();
+    }
+
+    function showError(error) {
+        switch(error.code) {
+            case error.PERMISSION_DENIED:
+                alert("User  denied location access.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                alert("Location unavailable.");
+                break;
+            case error.TIMEOUT:
+                alert("Location request timed out.");
+                break;
+            default:
+                alert("An unknown error occurred.");
+        }
+    }
+}
+
+function fetchHouses() {
+    currentView = 'fetchHouses'; // Set the current view to fetchHouses
+
+    // Hide all other sections
+    document.getElementById('map').style.display = 'none'; // Hide the map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square button container
+
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'block';
+
+    // Hide the house list initially
+    const houseList = document.getElementById('houseList');
+    houseList.style.display = 'none';
+
+    fetch('lFetch_houses.php')
+        .then(response => response.json())
+        .then(data => {
+            const houseList = document.getElementById('houseList');
+            houseList.innerHTML = ''; // Clear previous list
+
+            // Clear existing markers from the map
+            map.eachLayer(function(layer) {
+                if (layer instanceof L.Marker && layer !== userMarker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            data.forEach((house, index) => {
+                const houseCard = document.createElement('div');
+                houseCard.className = 'house-card';
+                houseCard.setAttribute('data-lat', house.latitude);
+                houseCard.setAttribute('data-lng', house.longitude);
+                
+                // Check if the main image exists, otherwise use the logo as a placeholder
+                const mainImageSrc = house.main_image ? house.main_image : 'animation/logo.png'; // Use logo image as placeholder
+
+                houseCard.innerHTML = `
+                    <div class="main-image-container">
+                        <img src="${mainImageSrc}" alt="${house.boarding_house_name}" class="house-image" style="animation-delay: ${index * 0.2}s;" />
+                    </div>
+                    <div class="house-info">
+                        <div class="house-name">${house.boarding_house_name || 'N/A'}</div>
+                        <div class="house-price" style="font-weight: bold; color: #f39c12;">₱${house.price ? house.price.toLocaleString() : 'N/A'}</div>
+                        <div class="house-location">${house.barangay ? house.barangay + ', ' : ''}${house.municipality ? house.municipality + ', ' : ''}${house.province || 'N/A'}</div>
+                    </div>
+                    <button class="view-button" onclick="showHouseDetails(${house.id})">
+                        <span class="material-icons">visibility</span>
+                    </button>
+                    <button class="menu-button" onclick="toggleMenu(${house.id}, ${house.latitude}, ${house.longitude}, '${house.boarding_house_name}')"> <!-- Show Route Icon -->
+                        <span class="material-icons">directions</span> <!-- Change to Show Route Icon -->
+                    </button>
+                `;
+                houseList.appendChild(houseCard);
+
+                if (house.latitude && house.longitude) {
+                    const markerIcon = L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div class="marker-icon">
+                                   <span class="material-icons">house</span>
+                                   <div class="arrow"></div>
+                               </div>`,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40]
+                    });
+
+                    const marker = L.marker([house.latitude, house.longitude], { icon: markerIcon }).addTo(map)
+                        .bindPopup(`
+                            <div style="text-align: center;">
+                                <strong>${house.boarding_house_name || 'N/A'}</strong><br>
+                                ${house.barangay ? house.barangay + ', ' : ''}${house.municipality ? house.municipality + ', ' : ''}${house.province || 'N/A'}<br>
+                                <button onclick="showRoute(${house.latitude}, ${house.longitude})" class="route-button">Show Route</button>
+                                <button onclick="removeRoute()" class="remove-route-button">Remove Route</button>
+                            </div>
+                        `);
+                }
+
+                houseCard.style.animationDelay = `${index * 0.2}s`;
+            });
+
+            // Show the house list after fetching
+            houseList.style.display = 'grid';
+
+            // Hide loading indicator
+            loadingIndicator.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error fetching houses:', error);
+            loadingIndicator.style.display = 'none'; // Hide loading indicator on error
+        });
+}
+
+// Function to toggle menu (you can implement your own logic here)
+function toggleMenu(houseId, lat, lng, houseName) {
+    // Hide the house list
+    document.querySelector('.house-list').style.display = 'none'; // Hide the house list
+
+    // Show the map
+    document.getElementById('map').style.display = 'block'; // Show the map container
+
+    // Initialize the map if it hasn't been initialized yet
+    if (!map) {
+        showMap(); // Call the showMap function to initialize the map
+    }
+
+    // Set the initial view to a wider zoom level
+    map.setView([lat, lng], 12); // Wider zoom level for initial view
+
+    // Zoom in to the desired level after a short delay
+    setTimeout(() => {
+        map.setView([lat, lng], 14); // Zoom in to the desired level
+    }, 500); // Adjust the delay as needed (500ms in this case)
+
+    // Show the route from the user's location to the house
+    showRoute(lat, lng);
+
+    // Hide the specific house marker if it exists
+    map.eachLayer(function(layer) {
+        if (layer instanceof L.Marker && layer.getPopup() && layer.getPopup().getContent() === houseName) {
+            map.removeLayer(layer); // Remove the house marker from the map
+        }
+    });
+}
+
+function showRoute(lat, lng) {
+    if (userLocation) {
+        // Create a route from user's location to the selected boarding house
+        createRoute([userLocation.lat, userLocation.lng], [lat, lng]);
+    } else {
+        alert("User  location is not available.");
+    }
+}
+
+function removeRoute() {
+    if (routeControl) {
+        map.removeControl(routeControl); // Remove the route control from the map
+        routeControl = null; // Reset the route control variable
+    }
+}
+
+function createRoute(start, end) {
+    // Remove previous route if it exists
+    if (routeControl) {
+        map.removeControl(routeControl);
+    }
+
+    // Fetch the route using OSRM
+    routeControl = L.Routing.control({
+        waypoints: [
+            L.latLng(start[0], start[1]),  // Start: User's location
+            L.latLng(end[0], end[1])  // End: Selected boarding house location
+        ],
+        createMarker: function() {
+            return null; // Do not create any markers for the waypoints
+        },
+        routeWhileDragging: true,
+        router: L.Routing.osrmv1({
+            alternatives: true // Enable alternative routes
+        }),
+        lineOptions: {
+            styles: [{ color: 'orange', weight: 6 }] // Set the main route color to orange
+        },
+        instructions: true,
+        routeLabel: function(route) {
+            // Apply CSS class based on route index
+            const className = route.index === 0 ? 'recommended-route' : 'alternative-route';
+            return `<span class="${className}">${route.summary} (${(route.distance / 1000).toFixed(1)} km)</span>`; // Display distance in kilometers
+        }
+    }).addTo(map);
+
+    // Listen for routing response to highlight alternative paths
+    routeControl.on('routesfound', function(e) {
+        var routes = e.routes;
+        var mainRoute = routes[0]; // First route is the shortest one
+
+        // Remove all previous alternative routes
+        map.eachLayer(function(layer) {
+            if (layer instanceof L.Polyline && layer !== routeControl) {
+                map.removeLayer(layer);
+            }
+        });
+
+        // Draw alternative routes in red
+        for (var i = 1; i < routes.length; i++) {
+            L.polyline(routes[i].coordinates, {
+                color: 'red', weight: 4, opacity: 0.6 // Set alternative routes color to red
+            }).addTo(map);
+        }
+    });
+}
+
+// Call fetchHouses when the page loads
+window.onload = function() {
+    showMap(); // Initialize the map
+    fetchHouses(); // Fetch houses
+};
+
+function showRoute(lat, lng) {
+    // Get the user's current location
+    if (userMarker) {
+        const userLatLng = userMarker.getLatLng(); // Get user's current location
+
+        // Create a route from user's location to the selected boarding house
+        createRoute([userLatLng.lat, userLatLng.lng], [lat, lng]);
+    } else {
+        alert("User  location is not available.");
+    }
+}
+
+        let currentView = 'fetchHouses';
+
+function showProfile() {
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Hide all other sections
+    document.querySelector('.house-list').style.display = 'none';
+    document.getElementById('map').style.display = 'none';
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square buttons
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+    document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'block';
+
+    // Fetch user details
+    fetch('fetch_user_details.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(user => {
+            console.log(user); // Log the user object to see its structure
+            // Hide loading indicator
+            loadingIndicator.style.display = 'none';
+
+            if (user.error) {
+                // Display error message
+                alert(user.error); // You can replace this with a more user-friendly UI element
+                console.error(user.error);
+            } else {
+                // Populate profile view with user details
+                document.getElementById('profileName').value = `${user.first_name} ${user.middle_name ? user.middle_name + ' ' : ''}${user.last_name}`;
+                document.getElementById('profileLocation').value = user.permanent_address;
+                document.getElementById('profileDepartment').value = user.college; // Assuming college is used as department
+                document.getElementById('profileCourse').value = user.course;
+
+                // Set the profile picture source
+                const profilePicPath = './uploads/' + user.profile_pic; // Adjust the path as necessary
+                document.getElementById('profilePic').src = profilePicPath; // Set the image source
+            }
+        })
+        .catch(error => {
+            // Hide loading indicator
+            loadingIndicator.style.display = 'none';
+            console.error('Error fetching user details:', error);
+            alert('An error occurred while fetching user details. Please try again later.'); // Display error message
+        });
+
+    // Show the profile view
+    document.getElementById('profileView').style.display = 'block';
+}
+
+        function showSettings() {
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Hide all other sections
+    document.getElementById('map').style.display = 'none'; // Hide the map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square buttons
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+
+    // Show the settings square button container
+    document.getElementById('settingsSquareButtonContainer').style.display = 'grid'; // Show settings square buttons
+}
+
+        function showGeneralDropdown() {
+            // Hide the square button container
+            document.getElementById('squareButtonContainer').style.display = 'none';
+            // Show the general dropdown
+            const generalDropdown = document.getElementById('generalDropdown');
+            generalDropdown.style.display = 'block';
+            document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+            document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+            document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+            document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+            document.getElementById('profileView').style.display = 'none'; // Hide profile view
+            document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+            document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+        }
+
+        function showPoliciesDropdown() {
+            // Hide the square button container
+            document.getElementById('squareButtonContainer').style.display = 'none';
+            // Show the policies dropdown
+            const policiesDropdown = document.getElementById('policiesDropdown');
+            policiesDropdown.style.display = 'block';
+            document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+            document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+            document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+            document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+            document.getElementById('profileView').style.display = 'none'; // Hide profile view
+            document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+            document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+        }
+
+        function showSecuritiesDropdown() {
+            // Hide the square button container
+            document.getElementById('squareButtonContainer').style.display = 'none';
+            // Show the securities dropdown
+            const securitiesDropdown = document.getElementById('securitiesDropdown');
+            securitiesDropdown.style.display = 'block';
+            document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+            document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+            document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+            document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+            document.getElementById('profileView').style.display = 'none'; // Hide profile view
+            document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+            document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+        }
+
+        function showAmenitiesDropdown() {
+            // Hide the square button container
+            document.getElementById('squareButtonContainer').style.display = 'none';
+            // Show the amenities dropdown
+            const amenitiesDropdown = document.getElementById('amenitiesDropdown');
+            amenitiesDropdown.style.display = 'block';
+            document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+            document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+            document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+            document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+            document.getElementById('profileView').style.display = 'none'; // Hide profile view
+            document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+            document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+        }
+
+        function toggleButtonClick(button) {
+            button.classList.toggle('button-clicked');
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode'); // Toggle dark mode class
+        }
+
+        function toggleLightMode() {
+            document.body.classList.remove('dark-mode'); // Remove dark mode class
+        }
+
+        function toggleWifiBilling() {
+            const wifiAvailability = document.getElementById('wifiAvailability').value;
+            const wifiBillingContainer = document.getElementById('wifiBillingContainer');
+            wifiBillingContainer.style.display = (wifiAvailability === 'Yes') ? 'block' : 'none';
+        }
+
+        function toggleElectricityBill() {
+            const electricityIncluded = document.getElementById('electricityIncluded').value;
+            const electricityBillContainer = document.getElementById('electricityBillContainer');
+            electricityBillContainer.style.display = (electricityIncluded === 'No') ? 'block' : 'none';
+        }
+
+        function toggleWaterBill() {
+            const waterIncluded = document.getElementById('waterIncluded').value;
+            const waterBillContainer = document.getElementById('waterBillContainer');
+            waterBillContainer.style.display = (waterIncluded === 'No') ? 'block' : 'none';
+        }
+
+        
+
+        function next(section) {
+            // Hide all dropdowns
+            document.getElementById('generalDropdown').style.display = 'none';
+            document.getElementById('policiesDropdown').style.display = 'none';
+            document.getElementById('securitiesDropdown').style.display = 'none';
+            document.getElementById('amenitiesDropdown').style.display = 'none';
+
+            // Show the next section based on the provided argument
+            if (section === 'policies') {
+                showPoliciesDropdown();
+            } else if (section === 'securities') {
+                showSecuritiesDropdown();
+            } else if (section === 'amenities') {
+                showAmenitiesDropdown();
+            }
+        }
+
+        function nextPolicies() {
+            next('securities');
+        }
+
+        function nextSecurities() {
+            next('amenities');
+        }
+
+        function nextAmenities() {
+            // Logic for what happens after amenities can be added here
+            alert("You have reached the end of the sections.");
+        }
+
+        function loadProfilePic(event) {
+            const profilePic = document.getElementById('profilePic');
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                profilePic.src = e.target.result; // Set the profile picture to the uploaded image
+            }
+
+            if (file) {
+                reader.readAsDataURL(file); // Read the uploaded file
+            }
+        }
+
+        
+        function clearGeneralDropdowns() {
+          document.getElementById('genderRequirements').value = 'Default'; // Reset to default
+          document.getElementById('distanceFromUniversity').value = 'Default'; // Reset to default
+          document.getElementById('rentalPrice').value = 'Default'; // Reset to default
+          document.getElementById('accommodationType').value = 'Default'; // Reset to default
+          document.getElementById('kitchenType').value = 'Default'; // Reset to default
+          document.getElementById('toiletType').value = 'Default'; // Reset to default
+          document.getElementById('landlordQuarters').value = 'Default'; // Reset to default
+          }
+          
+        function clearPoliciesDropdowns() {
+            document.getElementById('petPolicy').value = 'Default'; // Reset to default
+            document.getElementById('visitorPolicy').value = 'Default'; // Reset to default
+            document.getElementById('noisePolicy').value = 'Default'; // Reset to default
+            document.getElementById('curfewPolicy').value = 'Default'; // Reset to default
+            }
+            
+        function clearSecuritiesDropdowns() {
+              document.getElementById('fireExtinguisher').value = 'Default'; // Reset to default
+              document.getElementById('surveillanceCamera').value = 'Default'; // Reset to default
+              document.getElementById('fenceMaterial').value = 'Default'; // Reset to default
+              document.getElementById('buildingMaterial').value = 'Default'; // Reset to default
+              }
+          
+          function clearAmenitiesDropdowns() {
+            document.getElementById('wifiAvailability').value = 'Default'; // Reset to default
+            document.getElementById('wifiBilling').value = 'Default'; // Reset to default
+            document.getElementById('electricityIncluded').value = 'Default'; // Reset to default
+            document.getElementById('electricityBill').value = 'Default'; // Reset to default
+            document.getElementById('waterIncluded').value = 'Default'; // Reset to default
+            document.getElementById('waterBill').value = 'Default'; // Reset to default
+            }
+        
+        // Function to create random squares
+        function createRandomSquare() {
+            const square = document.createElement('div');
+            const size = Math.random() * 100 + 20; // Random size between 20px and 120px
+            const left = Math.random() * 100; // Random left position (percentage)
+            const top = Math.random() * 100; // Random top position (percentage)
+
+            square.className = 'square';
+            square.style.width = `${size}px`;
+            square.style.height = `${size}px`;
+            square.style.left = `${left}%`;
+            square.style.top = `${top}%`;
+            square.style.animationDuration = `${Math.random() * 2 + 2}s`; // Random duration between 2s and 4s
+
+            document.querySelector('.background-squares').appendChild(square);
+
+            // Remove the square after the animation duration
+            setTimeout(() => {
+                square.remove();
+            }, 4000); // Remove after 4 seconds
+        }
+
+        // Create squares at random intervals
+        setInterval(createRandomSquare, 500); // Create a new square every 500ms
+
+function showHouseDetails(houseId) {
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Hide all other sections
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+    document.getElementById('map').style.display = 'none'; // Hide map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+
+    // Fetch house details based on the houseId
+    fetch(`fetch_house_details.php?id=${houseId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(house => {
+            // Check for errors in the response
+            if (house.error) {
+                document.getElementById('houseDetailContent').innerHTML = `<p>${house.error}</p>`;
+                return;
+            }
+
+            // Populate the house details with appropriate placeholders
+            document.getElementById('mainHouseImage').src = house.main_image || 'https://via.placeholder.com/600x400';
+            document.getElementById('houseName').textContent = house.boarding_house_name || 'Unknown';
+            document.getElementById('houseLocation').textContent = 
+                `${house.barangay || 'N/A'}, ${house.municipality || 'N/A'}, ${house.province || 'N/A'}`;
+            document.getElementById('housePrice').textContent = 
+                `₱${house.price ? house.price.toLocaleString() : 'Free'}`;
+            
+            // Set gender requirements with icons
+            const genderRequirements = house.gender_requirements || 'N/A'; // Use 'N/A' if no gender requirements specified
+            let genderIcon = '';
+            switch (genderRequirements) {
+                case 'Male':
+                    genderIcon = '<span class="material-icons">male</span>'; // Male icon
+                    break;
+                case 'Female':
+                    genderIcon = '<span class="material-icons">female</span>'; // Female icon
+                    break;
+                case 'Both':
+                    genderIcon = '<span class="material-icons">transgender</span>'; // Both genders icon
+                    break;
+                default:
+                    genderIcon = ''; // No icon for 'N/A'
+            }
+            document.getElementById('houseGender').innerHTML = genderIcon + " " + genderRequirements; // Set icon and text
+
+            document.getElementById('houseDescription').textContent = 
+                house.description || 'No description available.';
+            document.getElementById('landlordName').textContent = 
+                house.landlord_name || 'Unknown';
+            document.getElementById('landlordContact').textContent = 
+                house.landlord_contact_number || 'N/A';
+            document.getElementById('landlordAddress').textContent = 
+                house.landlord_permanent_address || 'N/A';
+            document.getElementById('landlordIdentificationPic').src = house.landlord_identification_pic || 'https://via.placeholder.com/50';
+
+            // Populate mini images if available
+            const miniImages = [house.mini_image1, house.mini_image2, house.mini_image3];
+            miniImages.forEach((imgSrc, index) => {
+                const miniImageElement = document.getElementById(`miniImage${index + 1}`);
+                miniImageElement.src = imgSrc || 'https://via.placeholder.com/150';
+            });
+
+            // Populate room details
+            const roomCardContainer = document.querySelector('.room-card-container');
+            roomCardContainer.innerHTML = ''; // Clear previous room cards
+
+            if (!house.rooms || house.rooms.length === 0) {
+                // If no rooms are available, display a message
+                roomCardContainer.innerHTML = '<p>No available rooms.</p>';
+            } else {
+                // If rooms are available, create room cards
+                house.rooms.forEach((room, index) => {
+                    const roomCard = document.createElement('div');
+                    roomCard.className = 'room-card';
+                    roomCard.innerHTML = `
+                        <div class="room-door">
+                            <span class="material-icons">door_front</span> <!-- Door Icon -->
+                        </div>
+                        <p class="room-number">Room ${index + 1}</p> <!-- Room Number -->
+                        <p class="room-type">Type: ${room.room_type || 'N/A'}</p> <!-- Room Type -->
+                        <p class="room-price">₱${parseFloat(room.room_price).toFixed(2) || 'N/A'}</p> <!-- Room Price -->
+                    `;
+                    roomCardContainer.appendChild(roomCard);
+                });
+            }
+
+            // Show house details
+            document.getElementById('houseDetails').style.display = 'block'; // Show house details
+        })
+        .catch(error => {
+            console.error('Error fetching house details:', error);
+            document.getElementById('houseDetailContent').innerHTML = '<p>Error fetching house details. Please try again later.</p>';
+        });
+}
+
+function hideHouseDetails() {
+    document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+
+    if (currentView === 'generateHouses') {
+        // If the current view is generateHouses, show the generated house list
+        document.getElementById('generatedHouseList').style.display = 'block'; // Show generated house list
+    } else if (currentView === 'fetchHouses') {
+        // If the current view is fetchHouses, show the house list again
+        document.querySelector('.house-list').style.display = 'grid'; // Show house list again
+    }
+}
+
+function adjustFontSize(element) {
+    const maxLength = 30; // Set a maximum length for the text
+    const originalFontSize = 18; // Original font size in pixels
+
+    if (element.textContent.length > maxLength) {
+        const newSize = originalFontSize * (maxLength / element.textContent.length);
+        element.style.fontSize = `${Math.max(newSize, 12)}px`; // Set a minimum font size of 12px
+    } else {
+        element.style.fontSize = `${originalFontSize}px`; // Reset to original size
+    }
+}
+
+// Get modal elements
+const modal = document.getElementById("imageModal");
+const modalImage = document.getElementById("modalImage");
+const captionText = document.getElementById("caption");
+const closeModal = document.getElementById("closeModal");
+
+// Add event listeners to view buttons
+document.querySelectorAll('.view-icon-button').forEach((button, index) => {
+    button.addEventListener('click', () => {
+        // Determine which image to show based on the button index
+        if (index === 0) {
+            modalImage.src = document.getElementById("mainHouseImage").src; // Main image
+            captionText.innerHTML = "Main House Image"; // Caption for main image
+        } else {
+            modalImage.src = document.getElementById(`miniImage${index}`).src; // Mini images
+            captionText.innerHTML = `Mini House Image ${index}`; // Caption for mini images
+        }
+        modal.style.display = "block"; // Show the modal
+    });
+});
+
+// Close the modal when the close button is clicked
+closeModal.addEventListener('click', () => {
+    modal.style.display = "none"; // Hide the modal
+});
+
+// Close the modal when clicking outside of the modal content
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = "none"; // Hide the modal
+    }
+});
+
+function generateHouses(section) {
+    currentView = 'generateHouses'; // Set the current view to generateHouses
+    
+    // Hide all other sections, including the square button container
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+    document.getElementById('map').style.display = 'none'; // Hide map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+    document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square button container
+
+    // Collect values from the dropdowns
+    const genderRequirements = document.getElementById('genderRequirements').value;
+    const distanceFromUniversity = document.getElementById('distanceFromUniversity').value;
+    const rentalPrice = document.getElementById('rentalPrice').value;
+    const accommodationType = document.getElementById('accommodationType').value;
+    const kitchenType = document.getElementById('kitchenType').value;
+    const toiletType = document.getElementById('toiletType').value;
+    const landlordQuarters = document.getElementById('landlordQuarters').value;
+    const petPolicy = document.getElementById('petPolicy').value;
+    const visitorPolicy = document.getElementById('visitorPolicy').value;
+    const noisePolicy = document.getElementById('noisePolicy').value;
+    const curfewPolicy = document.getElementById('curfewPolicy').value;
+    const fireExtinguisher = document.getElementById('fireExtinguisher').value;
+    const surveillanceCamera = document.getElementById('surveillanceCamera').value;
+    const fenceMaterial = document.getElementById('fenceMaterial').value;
+    const buildingMaterial = document.getElementById('buildingMaterial').value;
+    const wifiAvailability = document.getElementById('wifiAvailability').value;
+    const electricityIncluded = document.getElementById('electricityIncluded').value;
+    const waterIncluded = document.getElementById('waterIncluded').value;
+
+    // Create an object to send to the server
+    const filters = {
+        genderRequirements,
+        distanceFromUniversity,
+        rentalPrice,
+        accommodationType,
+        kitchenType,
+        toiletType,
+        landlordQuarters,
+        petPolicy,
+        visitorPolicy,
+        noisePolicy,
+        curfewPolicy,
+        fireExtinguisher,
+        surveillanceCamera,
+        fenceMaterial,
+        buildingMaterial,
+        wifiAvailability,
+        electricityIncluded,
+        waterIncluded
+    };
+
+    // Hide all other sections
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+    document.getElementById('map').style.display = 'none'; // Hide map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square button container
+    document.getElementById('generatedHouseList').style.display = 'block'; // Show generated house list
+    document.getElementById('generatedList').innerHTML = ''; // Clear previous generated houses
+
+    // Send the filters to the PHP script
+    fetch('generate_houses.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(filters) // Convert the filters object to JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Check if data is returned
+        if (data.length > 0) {
+            data.forEach(house => {
+                const houseCard = document.createElement('div');
+                houseCard.className = 'house-card';
+                houseCard.innerHTML = `
+                    <div class="house-info">
+                        <div class="generate-house-icon material-icons">home</div> <!-- Updated House Icon with new class -->
+                        <div class="house-name">${house.boarding_house_name || 'N/A'}</div>
+                        <div class="house-price" style="font-weight: bold; color: #f39c12;">₱${house.price ? house.price.toLocaleString() : 'N/A'}</div>
+                    </div>
+                    <button class="view-button" onclick="showHouseDetails(${house.id})"> <!-- Pass house ID to showHouseDetails -->
+                        <span class="material-icons">visibility</span> <!-- View Icon -->
+                    </button>
+                `;
+                document.getElementById('generatedList').appendChild(houseCard);
+            });
+        } else {
+            const noResults = document.createElement('div');
+            noResults.textContent = 'No houses found based on the selected criteria.';
+            document.getElementById('generatedList').appendChild(noResults);
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching houses:', error);
+        const errorMessage = document.createElement('div');
+        errorMessage.textContent = 'An error occurred while fetching houses. Please try again.';
+        document.getElementById('generatedList').appendChild(errorMessage);
+    });
+}
+
+// Function to show the square buttons again
+function showSquareButtons() {
+    // Hide the no results message
+    hideNoResultsMessage();
+
+    // Hide the loading indicator if it's visible
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'none';
+
+    // Hide all other sections
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+    document.getElementById('map').style.display = 'none'; // Hide map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+    document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+
+    // Show the square button container
+    document.getElementById('squareButtonContainer').style.display = 'grid'; // Show square button container
+}
+
+function searchHouses() {
+    // Hide all other sections, including the square button container
+    document.querySelector('.house-list').style.display = 'none'; // Hide house list
+    document.getElementById('map').style.display = 'none'; // Hide map
+    document.getElementById('profileView').style.display = 'none'; // Hide profile view
+    document.getElementById('settingsSquareButtonContainer').style.display = 'none'; // Hide settings square buttons
+    document.getElementById('generalDropdown').style.display = 'none'; // Hide general dropdown
+    document.getElementById('policiesDropdown').style.display = 'none'; // Hide policies dropdown
+    document.getElementById('securitiesDropdown').style.display = 'none'; // Hide securities dropdown
+    document.getElementById('amenitiesDropdown').style.display = 'none'; // Hide amenities dropdown
+    document.getElementById('generatedHouseList').style.display = 'none'; // Hide generated house list
+    document.getElementById('settingsView').style.display = 'none'; // Hide settings view
+    document.getElementById('houseDetails').style.display = 'none'; // Hide house details
+    document.getElementById('squareButtonContainer').style.display = 'none'; // Hide square button container
+
+    const searchInput = document.getElementById('searchInput').value.toLowerCase(); // Get the input value
+    const houseCards = document.querySelectorAll('.house-card'); // Select all house cards
+    let hasResults = false; // Flag to check if there are results
+
+    // Show loading indicator
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    loadingIndicator.style.display = 'block';
+
+    // Hide the house list initially
+    const houseList = document.getElementById('houseList');
+    houseList.style.display = 'none';
+
+    // Hide the no results message initially
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    noResultsMessage.style.display = 'none';
+
+    // Simulate loading time (you can remove this in production)
+    setTimeout(() => {
+        houseCards.forEach(card => {
+            const houseName = card.querySelector('.house-name').textContent.toLowerCase(); // Get the house name
+            const houseLocation = card.querySelector('.house-location').textContent.toLowerCase(); // Get the house location
+
+            // Check if the house name or location includes the search input
+            if (houseName.includes(searchInput) || houseLocation.includes(searchInput)) {
+                card.style.display = 'block'; // Show the card if it matches
+                hasResults = true; // Set flag to true if there's a match
+            } else {
+                card.style.display = 'none'; // Hide the card if it doesn't match
+            }
+        });
+
+        // Show or hide the no results message based on the search results
+        if (hasResults) {
+            noResultsMessage.style.display = 'none'; // Hide message if there are results
+        } else {
+            noResultsMessage.style.display = 'block'; // Show message if no results
+        }
+
+        // Hide loading indicator
+        loadingIndicator.style.display = 'none';
+
+        // Show the house list after searching
+        houseList.style.display = 'grid';
+
+        // Optionally, you can call generateHouses() here if you want to refresh the house list
+        // generateHouses(); // Uncomment this line if you want to fetch new houses based on the search
+    }, 500); // Simulated loading time (500ms)
+}
+
+function hideNoResultsMessage() {
+    const noResultsMessage = document.getElementById('noResultsMessage');
+    noResultsMessage.style.display = 'none'; // Hide the message
+}
+
+function logout() {
+    // Show the logout confirmation modal
+    const logoutModal = document.getElementById('logoutModal');
+    logoutModal.style.display = 'flex'; // Show the modal
+
+    // Add event listeners for the buttons
+    document.getElementById('confirmLogout').onclick = function() {
+        // Redirect to the logout script
+        window.location.href = 'logout.php'; // Adjust the URL to your actual logout script
+    };
+
+    document.getElementById('cancelLogout').onclick = function() {
+        // Hide the modal
+        logoutModal.style.display = 'none';
+    };
+
+    // Close the modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target === logoutModal) {
+            logoutModal.style.display = 'none'; // Hide the modal
+        }
+    };
+}
+
+document.getElementById('searchInput').addEventListener('focus', function() {
+    document.getElementById('searchDisclaimer').style.display = 'block'; // Show disclaimer
+});
+
+document.getElementById('searchInput').addEventListener('blur', function() {
+    document.getElementById('searchDisclaimer').style.display = 'none'; // Hide disclaimer
+});
+
+
+function checkSelectedOptions() {
+    const generalOptions = document.querySelectorAll('#generalDropdown select');
+    const policiesOptions = document.querySelectorAll('#policiesDropdown select');
+    const securitiesOptions = document.querySelectorAll('#securitiesDropdown select');
+    const amenitiesOptions = document.querySelectorAll('#amenitiesDropdown select');
+
+    let selectedOptions = 0;
+
+    generalOptions.forEach(option => {
+        if (option.value !== 'Default') {
+            selectedOptions++;
+        }
+    });
+
+    policiesOptions.forEach(option => {
+        if (option.value !== 'Default') {
+            selectedOptions++;
+        }
+    });
+
+    securitiesOptions.forEach(option => {
+        if (option.value !== 'Default') {
+            selectedOptions++;
+        }
+    });
+
+    amenitiesOptions.forEach(option => {
+        if (option.value !== 'Default') {
+            selectedOptions++;
+        }
+    });
+
+    if (selectedOptions > 4) {
+        showCustomAlert();
+    }
+}
+
+function showCustomAlert() {
+    const alertBox = document.getElementById('customAlert');
+    alertBox.style.display = 'block';
+}
+
+function closeAlert() {
+    const alertBox = document.getElementById('customAlert');
+    alertBox.style.display = 'none';
+}
+
+// Call the function when the generate button is clicked
+document.querySelectorAll('.dropdown-buttons button').forEach(button => {
+    button.addEventListener('click', checkSelectedOptions);
+});
+
+// Call the function when the generate button is clicked
+document.querySelectorAll('.dropdown-buttons button').forEach(button => {
+    button.addEventListener('click', checkSelectedOptions);
+});
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landlord Registration Form</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Full height for centering */
+            overflow: hidden; /* Prevent scrolling on body */
+        }
+        h2 {
+            text-align: center;
+            font-family: 'Dancing Script', cursive; /* Cursive font */
+            font-size: 2.5em; /* Adjust font size as needed */
+            color: #142F48; /* Darkest navy blue */
+            margin-bottom: 20px; /* Space below the heading */
+            overflow: hidden; /* Ensures the text is hidden until animated */
+            white-space: nowrap; /* Prevents text wrapping */
+            width: 0; /* Start with width 0 for animation */
+            opacity: 0; /* Start with opacity 0 for fade-in effect */
+            animation: writing 4s forwards, fadeIn 0.5s forwards; /* Animation for writing effect and fade-in */
+        }
+        @keyframes writing {
+            from {
+                width: 0;
+                opacity: 0; /* Start invisible */
+            }
+            to {
+                width: 100%;
+                opacity: 1; /* Fade in to visible */
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0; /* Start invisible */
+            }
+            to {
+                opacity: 1; /* Fade in to visible */
+            }
+        }
+        .form-container {
+            max-width: 600px;
+            width: 100%; /* Full width for smaller screens */
+            max-height: 90vh; /* Limit height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 20px;
+            border-radius: 12px; /* Rounded corners */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Soft shadow for depth */
+            background-color: #BDCCDC; /* Light blue-gray */
+            border: 2px solid #8199B1; /* Muted medium blue border */
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .form-row div {
+            flex: 1;
+            margin-right: 10px;
+            min-width: 100px; /* Minimum width for smaller screens */
+        }
+        .form-row div:last-child {
+            margin-right: 0;
+        }
+        /* Specific widths for the first name, middle initial, last name, and ex fields */
+        #landlord_fname, #landlord_mname, #landlord_lname, #landlord_nextension {
+            width: 100%; /* Set width to 22% for four columns */
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #47647F; /* Deep blue-gray */
+        }
+        select, input[type="text"], input[type="password"], input[type="email"], input[type="file"] {
+            width: 100%;
+            padding: 10px; /* Increased padding for comfort */
+            box-sizing: border-box;
+            border-radius: 8px; /* Rounded corners for inputs */
+            border: 1px solid #8199B1; /* Muted medium blue border */
+            transition: border-color 0.3s; /* Smooth transition for focus */
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+        }
+        select:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus, input[type="file"]:focus {
+            border-color: #142F48; /* Darkest navy blue on focus */
+            outline: none; /* Remove default outline */
+        }
+        button {
+            width: 100%; /* Full width for button */
+            padding: 10px;
+            background-color: #47647F; /* Deep blue-gray for button */
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded corners for the button */
+            cursor: pointer;
+            margin: 0 auto; /* Center the button */
+            display: block; /* Make button a block element */
+            transition: background-color 0.3s; /* Smooth transition for hover */
+        }
+        button:hover {
+            background-color: #142F48; /* Darkest navy blue on hover */
+        }
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .password-toggle-icon {
+            position: absolute;
+            right: 10px;
+            cursor: pointer;
+            color: #47647F; /* Deep blue-gray */
+        }
+        .required-indicator {
+            color: red; /* Color for required field indicator */
+        }
+        .password-requirements {
+            font-size: 0.9em;
+            color: #47647F; /* Deep blue-gray */
+            margin-top: 5px;
+        }
+        .error-message {
+            color: red; /* Error message color */
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+        }
+        .length-indicator {
+            color: red; /* Length indicator color */
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none; /* Initially hidden */
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            body {
+                overflow: auto; /* Allow body to scroll on mobile */
+            }
+            .form-container {
+                overflow-y: auto; /* Enable vertical scrolling for the form */
+            }
+            .form-row {
+                flex-direction: column; /* Stack vertically on small screens */
+            }
+            .form-row div {
+                margin-right: 0; /* Remove right margin */
+                margin-bottom: 10px; /* Add bottom margin for spacing */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Landlord Registration Form</h2>
+    <form action="landlord_submit_registration.php" method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="landlord_fname" class="required">First Name:<span class="required-indicator">*</span></label>
+                <input type="text" id="landlord_fname" name="landlord_fname" required>
+            </div>
+            <div class="form-group">
+                <label for="landlord_mname">Middle Initial:</label>
+                <input type="text" id="landlord_mname" name="landlord_mname" maxlength="1">
+            </div>
+            <div class="form-group">
+                <label for="landlord_lname" class="required">Last Name:<span class="required-indicator">*</span></label>
+                <input type="text" id="landlord_lname" name="landlord_lname" required>
+            </div>
+            <div class="form-group">
+                <label for="landlord_nextension">Ex.:</label>
+                <input type="text" id="landlord_nextension" name="landlord_nextension" maxlength="5" placeholder="e.g., Jr.">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group full-width">
+                <label for="landlord_email" class="required">Email Address:<span class="required-indicator">*</span></label>
+                <input type="email" id="landlord_email" name="landlord_email" required>
+            </div>
+            <div class="form-group full-width">
+                <label for="landlord_gender" class="required">Gender:<span class="required-indicator">*</span></label>
+                <select id="landlord_gender" name="landlord_gender" required>
+                    <option value="" disabled selected>Select your gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="landlord_password" class="required">Password:<span class="required-indicator">*</span></label>
+                <div class="password-container">
+                    <input type="password" id="landlord_password" name="landlord_password" required>
+                    <i class="fas fa-eye password-toggle-icon" id="togglePassword"></i>
+                </div>
+                <div class="password-requirements">
+                    Password must be at least 8 characters long, contain at least one uppercase letter, one lowercase letter, and one number. No symbols allowed.
+                </div>
+                <div class="error-message" id="passwordError"></div>
+                <div class="length-indicator" id="lengthIndicator">Password must be at least 8 characters long.</div>
+            </div>
+            <div class="form-group">
+                <label for="landlord_repassword" class="required">Retype Password:<span class="required-indicator">*</span></label>
+                <div class="password-container">
+                    <input type="password" id="landlord_repassword" name="landlord_repassword" required>
+                    <i class="fas fa-eye password-toggle-icon" id="toggleRePassword"></i>
+                </div>
+                <div class="error-message" id="rePasswordError"></div>
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <label for="landlord_paddress" class="required">Permanent Address:<span class="required-indicator">*</span></label>
+            <input type="text" id="landlord_paddress" name="landlord_paddress" required>
+        </div>
+
+        <div class="form-group">
+            <label for="landlord_barangay_permit" class="required">Upload Barangay Permit (Photo):<span class="required-indicator">*</span></label>
+            <input type="file" id="landlord_barangay_permit" name="landlord_barangay_permit" accept="image/*" required>
+        </div>
+
+        <div class="form-group">
+            <label for="landlord_boarding_house_photo" class="required">Upload Photo of Boarding House:<span class="required-indicator">*</span></label>
+            <input type="file" id="landlord_boarding_house_photo" name="landlord_boarding_house_photo" accept="image/*" required>
+        </div>
+
+        <button type="button" onclick="submitForm()">Register</button>
+    </form>
+</div>
+
+<script>
+    function submitForm() {
+        // Get the form element
+        const form = document.querySelector('form');
+
+        // Perform any necessary validations here
+        // For example, check if all required fields are filled
+        const requiredFields = form.querySelectorAll('[required]');
+        let allFilled = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value) {
+                allFilled = false;
+                alert(field.previousElementSibling.innerText + ' is required.');
+            }
+        });
+
+        // If all required fields are filled, submit the form
+        if (allFilled) {
+            form.submit();
+        }
+    }
+
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("landlord_password");
+    const toggleRePassword = document.getElementById("toggleRePassword");
+    const rePasswordField = document.getElementById("landlord_repassword");
+    const passwordError = document.getElementById("passwordError");
+    const rePasswordError = document.getElementById("rePasswordError");
+    const lengthIndicator = document.getElementById("lengthIndicator");
+
+    togglePassword.addEventListener("click", function () {
+        const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
+        passwordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+    });
+
+    toggleRePassword.addEventListener("click", function () {
+        const type = rePasswordField.getAttribute("type") === "password" ? "text" : "password";
+        rePasswordField.setAttribute("type", type);
+        this.classList.toggle("fa-eye-slash");
+    });
+
+    // Validate password requirements
+    passwordField.addEventListener('input', function() {
+        const password = passwordField.value;
+        passwordError.style.display = 'none'; // Reset error message
+        lengthIndicator.style.display = password.length < 8 ? 'block' : 'none'; // Show/hide length indicator
+
+        // Check for symbols
+        if (/[^a-zA-Z0-9]/.test(password)) {
+            passwordError.textContent = 'Password cannot contain symbols.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all lowercase
+        if (password === password.toLowerCase()) {
+            passwordError.textContent = 'Password must contain at least one uppercase letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all uppercase
+        if (password === password.toUpperCase()) {
+            passwordError.textContent = 'Password must contain at least one lowercase letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for all numbers
+        if (/^\d+$/.test(password)) {
+            passwordError.textContent = 'Password must contain at least one letter.';
+            passwordError.style.display = 'block';
+            return;
+        }
+
+        // Check for at least one uppercase, one lowercase, and one number
+        if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+            passwordError.textContent = 'Password must contain at least one uppercase letter, one lowercase letter, and one number.';
+            passwordError.style.display = 'block';
+            return;
+        }
+    });
+
+    // Validate retype password
+    rePasswordField.addEventListener('input', function() {
+        if (passwordField.value !== rePasswordField.value) {
+            rePasswordError.style.display = 'block';
+            rePasswordError.textContent = 'Passwords do not match.';
+        } else {
+            rePasswordError.style.display = 'none';
+        }
+    });
+
+    passwordField.addEventListener('input', function () {
+        if (passwordField.value === rePasswordField.value) {
+            rePasswordError.style.display = 'none';
+        }
+    });
+</script>
+
+</body>
+</html>

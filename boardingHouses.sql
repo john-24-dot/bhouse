@@ -1,0 +1,38 @@
+DROP TABLE IF EXISTS boarding_houses;
+
+CREATE TABLE boarding_houses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    boarding_house_name VARCHAR(255) DEFAULT NULL,
+    address VARCHAR(255) DEFAULT NULL,
+    main_image VARCHAR(255) DEFAULT NULL,
+    mini_image1 VARCHAR(255) DEFAULT NULL,
+    mini_image2 VARCHAR(255) DEFAULT NULL,
+    mini_image3 VARCHAR(255) DEFAULT NULL,
+    price DECIMAL(10, 2) DEFAULT 0.00, -- Default to 0.00 instead of NULL
+    gender_requirements ENUM('Both', 'Male', 'Female') DEFAULT NULL,
+    distance_from_university ENUM('Near', 'Moderate', 'Far') DEFAULT NULL,
+    rental_price ENUM('Cheap', 'Moderate', 'Expensive') DEFAULT NULL,
+    accommodation_type ENUM('Room Space', 'Bed Space') DEFAULT NULL,
+    kitchen_type ENUM('Shared', 'Exclusive') DEFAULT NULL,
+    toilet_type ENUM('Shared', 'Exclusive') DEFAULT NULL,
+    landlord_quarters ENUM('Same Building', 'Nearby', 'Far from boarding house') DEFAULT NULL,
+    pet_policy ENUM('Allowed', 'Not Allowed') DEFAULT NULL,
+    visitor_policy ENUM('Limited', 'Not Allowed') DEFAULT NULL,
+    noise_policy ENUM('Strict', 'Moderate', 'Low') DEFAULT NULL,
+    curfew ENUM('Yes', 'No') DEFAULT NULL,
+    fire_extinguisher ENUM('Yes', 'None') DEFAULT NULL,
+    surveillance_camera ENUM('Yes', 'None') DEFAULT NULL,
+    fence_material ENUM('Metal', 'Wood', 'Concrete', 'None') DEFAULT NULL,
+    building_material ENUM('Wood', 'Concrete', 'Mixed') DEFAULT NULL,
+    wifi_availability ENUM('Yes', 'No') DEFAULT NULL,
+    wifi_billing ENUM('Free', 'Included In Rent', 'Separated Bill') DEFAULT NULL,
+    electricity_included ENUM('Yes', 'No') DEFAULT NULL,
+    electricity_billing ENUM('Metered', 'Fixed') DEFAULT NULL,
+    water_included ENUM('Yes', 'No') DEFAULT NULL,
+    water_billing ENUM('Metered', 'Fixed') DEFAULT NULL,
+    description TEXT DEFAULT NULL,
+    landlord_name VARCHAR(255) DEFAULT NULL,
+    landlord_permanent_address VARCHAR(255) DEFAULT NULL,
+    landlord_contact_number VARCHAR(20) DEFAULT NULL,
+    room_count INT DEFAULT NULL
+);

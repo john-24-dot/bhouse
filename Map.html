@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet OSRM Routing Map</title>
+
+    <!-- Leaflet CSS (Stable version) -->
+    <link rel="stylesheet" href="leaflet/leaflet.css" />
+
+    <!-- Leaflet JS (Stable version) -->
+    <script src="leaflet/leaflet.js"></script>
+
+    <!-- Leaflet Routing Machine (Stable version) -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+    <style>
+        /* Set full-screen map */
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; }
+        #map { height: 100vh; width: 100vw; }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([13.6205, 123.1941], 12); // Default center (Bicol region)
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var userMarker, routeControl;
+
+        // Get User Location
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function showPosition(position) {
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;
+
+            // Set user location marker
+            userMarker = L.marker([lat, lng]).addTo(map)
+                .bindPopup("You are here").openPopup();
+
+            map.setView([lat, lng], 14);
+
+            // Listen for clicks to set destination
+            map.on('click', function(e) {
+                var destination = e.latlng;
+                createRoute([lat, lng], [destination.lat, destination.lng]);
+            });
+        }
+
+        function createRoute(start, end) {
+            // Remove previous route
+            if (routeControl) {
+                map.removeControl(routeControl);
+            }
+
+            // Create new route
+            routeControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(start[0], start[1]),  // Start (User location)
+                    L.latLng(end[0], end[1])      // Destination (Clicked location)
+                ],
+                routeWhileDragging: true,
+                createMarker: function(i, waypoint) {
+                    return L.marker(waypoint.latLng, {
+                        draggable: false
+                    }).bindPopup(i === 0 ? "Start: Your Location" : "Destination");
+                },
+                router: L.Routing.osrmv1({
+                    serviceUrl: 'https://router.project-osrm.org/route/v1' // Free public OSRM server
+                }),
+                lineOptions: {
+                    styles: [{ color: 'blue', weight: 6 }]
+                }
+            }).addTo(map);
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    alert("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    alert("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    alert("The request to get user location timed out.");
+                    break;
+                default:
+                    alert("An unknown error occurred.");
+            }
+        }
+
+        getLocation();
+    </script>
+
+</body>
+</html>

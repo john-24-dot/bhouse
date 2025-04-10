@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page - Switch Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> <!-- Font Awesome -->
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the container */
+        body {
+            background-color: #ECF0F6; /* Lightest shade */
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Welcome message styling */
+        .welcome-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #142F48; /* Darkest navy blue */
+            text-align: center;
+            font-family: 'Dancing Script', Cursive; /* Cursive font */
+        }
+
+        /* Pop-in effect */
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Styling for the toggle button */
+        .toggle-container {
+            margin-bottom: 20px;
+        }
+
+        .toggle-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 180px; /* Increased width for Admin toggle */
+            height: 50px;
+            background-color: #47647F; /* Deep blue-gray */
+            border-radius: 25px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease;
+            animation: popIn 0.5s ease;
+            outline: none; /* Remove the blue indicator */
+        }
+
+        .toggle-btn:hover {
+            background-color: #3a78b8; /* Change background color on hover */
+        }
+
+        /* Styling for the icons */
+        .icon {
+            font-size: 24px;
+            color: white;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Hiding the Landlord icons initially */
+        .hidden {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+
+        /* Styling for the forms */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            background-color: #BDCCDC; /* Light blue-gray */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container.hidden {
+            display: none;
+        }
+
+        .form-container h2 {
+            margin-bottom: 15px;
+            color: #142F48; /* Darkest navy blue */
+        }
+
+        .form-container label {
+            margin-bottom: 5px;
+            color: #142F48; /* Darkest navy blue */
+            display: block; /* Make the label a block element */
+            text-align: left; /* Align text to the left */
+        }
+
+        .form-container input {
+            width: 100%; /* Set input width to 100% */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #8199B1; /* Muted medium blue */
+            border-radius: 5px;
+            transition: border-color 0.3s ease; /* Smooth transition for border color */
+        }
+
+        .form-container input:focus {
+            border-color: #47647F; /* Deep blue-gray */
+        }
+
+        .form-container button {
+            padding: 10px;
+            border: none;
+            background-color: #47647F; /* Deep blue-gray */
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin: 0 auto; /* Center the button */
+            display: block; /* Ensure the button is a block element for centering */
+        }
+
+        .form-container button:hover {
+            background-color: #3a78b8; /* Change to a lighter shade of the button color */
+        }
+
+        .form-container p {
+            margin-top: 10px;
+            text-align: center;
+            color: #142F48; /* Darkest navy blue */
+        }
+
+        .form-container a {
+            color: #47647F; /* Deep blue-gray */
+            text-decoration: none;
+        }
+
+        /* Responsive design for smaller devices */
+        @media (max-width: 600px) {
+            .form-container {
+                width: 100%;
+                padding: 0 20px;
+            }
+        }
+
+        /* Styling for the info buttons container */
+        .info-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+
+        /* Styling for the individual info buttons */
+        .info-btn {
+            flex: 1;
+            padding: 10px 15px;
+            background-color: #47647F; /* Deep blue-gray */
+            color: white;
+            border: none;
+            border-radius: 20px;
+            margin: 0 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Hover effect for buttons */
+        .info-btn:hover {
+            background-color: #3a78b8; /* Change background color on hover */
+        }
+
+        /* Responsive design for mobile */
+        @media (max-width: 600px) {
+            .info-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .info-btn {
+                width: 80%;
+                margin-bottom: 10px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Styling for the password visibility toggle */
+        .password-container {
+            position: relative;
+            width: 100%; /* Ensure the container takes full width */
+        }
+
+        .password-container input {
+            width: 85%; /* Set input width to 85% */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #8199B1; /* Muted medium blue */
+            border-radius: 5px;
+            transition: border-color 0.3s ease; /* Smooth transition for border color */
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px; /* Adjust as needed for spacing */
+            top: 40%; /* Raise the icon position */
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #47647F;
+            transition: color 0.3s ease; /* Smooth transition for color */
+        }
+
+        .toggle-password:hover {
+            color: #3a78b8; /* Change to match the button hover color */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Message -->
+        <div id="welcomeMessage" class="welcome-message">Welcome, Student</div> <!-- Removed hidden class -->
+
+        <!-- Toggle Button for Student and Landlord -->
+        <div class="toggle-container">
+            <div id="toggleBtn" class="toggle-btn">
+                <span class="icon student-icon"><i class="fas fa-user-graduate"></i></span> <!-- Icon for Student -->
+                <span class="icon landlord-icon hidden"><i class="fas fa-building"></i></span> <!-- Icon for Landlord -->
+            </div>
+        </div>
+
+        <!-- Student Log In and Sign Up Form -->
+        <div id="studentForm" class="form-container">
+    <h2>Student</h2>
+    <form id="studentLoginForm" action="studentlogin.php" method="POST"> <!-- Ensure this points to the correct path -->
+        <label for="student-email">Email:</label>
+        <input type="email" id="student-email" name="email" placeholder="Enter your email" required> <!-- Added name attribute -->
+        <label for="student-password">Password:</label>
+        <div class="password-container">
+            <input type="password" id="student-password" name="password" placeholder="Enter your password" required> <!-- Added name attribute -->
+            <span class="toggle-password" id="toggleStudentPassword"><i class="fas fa-eye"></i></span>
+        </div>
+        <button type="submit">Log In</button>
+        <p>Don't have an account? <a href="student_registration.html">Sign Up</a></p>
+    </form>
+</div>
+
+        <!-- Landlord Log In and Sign Up Form -->
+        <div id="landlordForm" class="form-container hidden">
+            <h2>Landlord</h2>
+            <form id="landlordLoginForm" action="landlordlogin.php" method="POST">
+                <label for="landlord-email">Email:</label>
+                <input type="email" id="landlord-email" name="email" placeholder="Enter your email" required>
+                <label for="landlord-password">Password:</label>
+                <div class="password-container">
+                    <input type="password" id="landlord-password" name="password" placeholder="Enter your password" required>
+                    <span class="toggle-password" id="toggleLandlordPassword"><i class="fas fa-eye"></i></span>
+                </div>
+                <button type="submit">Log In</button>
+                <p>Don't have an account? <a href="landlord_registration.html">Sign Up</a></p>
+            </form>
+        </div>
+
+        <!-- Info Buttons Section -->
+        <div class="info-buttons">
+            <button class="info-btn" id="aboutUniversityBtn">
+                <i class="fas fa-university"></i><br>
+                About University
+            </button>
+            <button class="info-btn" id="aboutSystemBtn">
+                <i class="fas fa-laptop-code"></i><br>
+                About the System
+            </button>
+            <button class="info-btn" id="aboutVisionMissionBtn">
+                <i class="fas fa-eye"></i><br>
+                Vision & Mission
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Get the button, forms, and welcome message
+        const toggleBtn = document.getElementById('toggleBtn');
+        const studentForm = document.getElementById('studentForm');
+        const landlordForm = document.getElementById('landlordForm');
+        const studentIcon = document.querySelector('.student-icon');
+        const landlordIcon = document.querySelector('.landlord-icon');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+
+        // Function to switch between Student and Landlord forms
+        toggleBtn.addEventListener('click', () => {
+            if (studentForm.classList.contains('hidden')) {
+                // Show Student form
+                studentForm.classList.remove('hidden');
+                landlordForm.classList.add('hidden');
+                studentIcon.classList.remove('hidden');
+                landlordIcon.classList.add('hidden');
+                welcomeMessage.textContent = "Welcome, Student"; // Update welcome message
+            } else {
+                // Show Landlord form
+                landlordForm.classList.remove('hidden');
+                studentForm.classList.add('hidden');
+                studentIcon.classList.add('hidden');
+                landlordIcon.classList.remove('hidden');
+                welcomeMessage.textContent = "Welcome, Landlord"; // Update welcome message
+            }
+            welcomeMessage.classList.remove('hidden'); // Show welcome message
+        });
+        
+        // Student Login Form Submission
+        document.getElementById('studentLoginForm').addEventListener('submit', function(event) {
+            // Remove the preventDefault to allow form submission
+            const email = document.getElementById('student-email').value;
+            const password = document.getElementById('student-password').value;
+
+            // Create a hidden input to send the email and password
+            const hiddenEmailInput = document.createElement('input');
+            hiddenEmailInput.type = 'hidden';
+            hiddenEmailInput.name = 'email';
+            hiddenEmailInput.value = email;
+
+            const hiddenPasswordInput = document.createElement('input');
+            hiddenPasswordInput.type = 'hidden';
+            hiddenPasswordInput.name = 'password';
+            hiddenPasswordInput.value = password;
+
+            // Append hidden inputs to the form
+            this.appendChild(hiddenEmailInput);
+            this.appendChild(hiddenPasswordInput);
+        });
+        
+        // Landlord Login Form Submission
+        document.getElementById('landlordLoginForm').addEventListener('submit', function(event) {
+            // Remove the preventDefault to allow form submission
+            const email = document.getElementById('landlord-email').value;
+            const password = document.getElementById('landlord-password').value;
+
+            // Create hidden inputs to send the email and password
+            const hiddenEmailInput = document.createElement('input');
+            hiddenEmailInput.type = 'hidden';
+            hiddenEmailInput.name = 'email';
+            hiddenEmailInput.value = email;
+
+            const hiddenPasswordInput = document.createElement('input');
+            hiddenPasswordInput.type = 'hidden';
+            hiddenPasswordInput.name = 'password';
+            hiddenPasswordInput.value = password;
+
+            // Append hidden inputs to the form
+            this.appendChild(hiddenEmailInput);
+            this.appendChild(hiddenPasswordInput);
+        });
+
+        // Toggle password visibility for Student
+        const toggleStudentPassword = document.getElementById('toggleStudentPassword');
+        toggleStudentPassword.addEventListener('click', () => {
+            const passwordInput = document.getElementById('student-password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            toggleStudentPassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Toggle password visibility for Landlord
+        const toggleLandlordPassword = document.getElementById('toggleLandlordPassword');
+        toggleLandlordPassword.addEventListener('click', () => {
+            const passwordInput = document.getElementById('landlord-password');
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            toggleLandlordPassword.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Info Buttons (optional)
+        document.getElementById('aboutUniversityBtn').addEventListener('click', () => {
+            alert("Information about the University.");
+        });
+
+        document.getElementById('aboutSystemBtn').addEventListener('click', () => {
+            alert("Information about the System.");
+        });
+
+        document.getElementById('aboutVisionMissionBtn').addEventListener('click', () => {
+            alert("Vision and Mission information.");
+        });
+    </script>
+</body>
+</html>

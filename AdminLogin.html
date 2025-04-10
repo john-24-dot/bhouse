@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page - Admin Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"> <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet"> <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"> <!-- Google Material Icons -->
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Styling for the container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+        }
+
+        /* Welcome message styling */
+        .welcome-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #142F48; /* Darkest navy blue */
+            text-align: center;
+            font-family: 'Dancing Script', cursive; /* Apply cursive font */
+        }
+
+        /* Pop-in effect */
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Styling for the forms */
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            padding: 20px; /* Added padding for better spacing */
+            border: 1px solid #BDCCDC; /* Light blue-gray */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Drop shadow */
+            background-color: #ECF0F6; /* Lightest shade (almost white) */
+            position: relative; /* Position relative for pseudo-elements */
+            overflow: hidden; /* Hide overflow for the animated gradient */
+            z-index: 1; /* Ensure form is above the background */
+        }
+
+        /* Animated gradient background */
+        .form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(270deg, rgba(20, 47, 72, 0.6), rgba(189, 204, 220, 0.6), rgba(20, 47, 72, 0.6));
+            background-size: 400% 400%; /* Size for the animation */
+            animation: gradientAnimation 15s ease infinite; /* Animation for the gradient */
+            z-index: 0; /* Behind the form elements */
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .form-container h2 {
+            margin-bottom: 15px;
+            position: relative; /* Position relative for z-index */
+            z-index: 1; /* Bring h2 above the lines */
+            color: #47647F; /* Deep blue-gray */
+        }
+
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+            position: relative; /* Position relative for z-index */
+            z-index: 1; /* Bring form above the lines */
+        }
+
+        .form-container label {
+            margin-bottom: 5px;
+            position: relative; /* Position relative for z-index */
+            z-index: 1; /* Bring label above the lines */
+            color: #47647F; /* Deep blue-gray */
+        }
+
+        /* Styling for input fields */
+        .form-container input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #BDCCDC; /* Light blue-gray */
+            border-radius: 5px;
+            position: relative; /* Position relative for the icon */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Drop shadow for inputs */
+            transition: border-color 0.3s; /* Transition for border color */
+            z-index: 1; /* Bring input above the lines */
+        }
+
+        .form-container input:focus {
+            border-color: #8199B1; /* Muted medium blue */
+            outline: none; /* Remove default outline */
+        }
+
+        .form-container button {
+            padding: 10px;
+            border: none;
+            background-color: #47647F; /* Deep blue-gray */
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1; /* Bring button above the lines */
+        }
+
+        .form-container button:hover {
+            background-color: #8199B1; /* Muted medium blue */
+        }
+
+        /* Password visibility toggle icon */
+        .password-container {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #47647F; /* You can change this to another color if needed */
+            z-index: 1; /* Bring icon above the lines */
+            font-family: 'Material Icons'; /* Use Google Material Icons */
+        }
+
+        /* Fireworks effect */
+        .fireworks {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #47647F; /* Deep blue-gray */
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction */
+            animation: explode 0.5s forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(5);
+                opacity: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Message -->
+        <div id="welcomeMessage" class="welcome-message">Welcome, Admin</div>
+
+        <!-- Admin Log In Form -->
+        <div id="adminForm" class="form-container">
+    <h2>Admin</h2>
+    <form id="adminLoginForm" action="adminlogin.php" method="POST">
+    <label for="admin-username">Username:</label>
+    <input type="text" id="admin-username" name="username" placeholder="Enter your username" required>
+    <label for="admin-password">Password:</label>
+    <div class="password-container">
+        <input type="password" id="admin-password" name="password" placeholder="Enter your password" required>
+        <span class="material-icons toggle-password" id="togglePassword">visibility</span>
+        <div class="fireworks" id="fireworks"></div>
+    </div>
+    <button type="submit">Log In</button>
+</div>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('admin-password');
+        const fireworks = document.getElementById('fireworks');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.textContent = type === 'password' ? 'visibility' : 'visibility_off'; // Change icon based on visibility
+
+            // Trigger fireworks animation
+            fireworks.style.opacity = '1';
+            fireworks.style.animation = 'explode 0.5s forwards';
+
+            // Reset fireworks after animation
+            setTimeout(() => {
+                fireworks.style.opacity = '0';
+                fireworks.style.animation = '';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
